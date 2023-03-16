@@ -142,11 +142,11 @@ esMayorQueLaOtra unaPersona otraPersona = edad unaPersona > edad otraPersona
 
 data Pokemon = Pokemon TipoDePokemon Int Entrenador deriving Show
 data TipoDePokemon = Planta|Fuego|Agua deriving Show
-data Entrenador = Entrenador String (Pokemon,Pokemon)  deriving Show
+data Entrenador = Entrenador String [Pokemon]  deriving Show
 
 chorizord = Pokemon Fuego 100 ash
 bulbasor = Pokemon Planta 150 ash
-ash = Entrenador "Ash" (chorizord,bulbasor)
+ash = Entrenador "Ash" [chorizord,bulbasor]
 
 --A
 
@@ -154,15 +154,20 @@ tipo :: Pokemon -> TipoDePokemon
 tipo (Pokemon tipoDePokemon _ _) = tipoDePokemon
 
 superaA :: Pokemon -> Pokemon -> Bool
-superaA Agua(unPokemon) Fuego(otroPokemon) = True
-superaA Fuego(unPokemon) Planta(otroPokemon) = True
-superaA Planta(unPokemon) Agua(otroPokemon) = True
-superaA _ _ = False
+superaA unPokemon otroPokemon = tipoDePokemonLeGanaA (tipo(unPokemon)) (tipo(otroPokemon))
 
-esSuperior :: Pokemon -> Bool
+tipoDePokemonLeGanaA :: TipoDePokemon -> TipoDePokemon -> Bool
+tipoDePokemonLeGanaA Agua Fuego = True
+tipoDePokemonLeGanaA Fuego Planta = True
+tipoDePokemonLeGanaA Planta Agua = True
+tipoDePokemonLeGanaA _ _ = False
 
+{-tuplaPokemon :: Pokemon -> Pokemon -> (Pokemon,Pokemon)
+tuplaPokemon unPokemon otroPokemon = (unPokemon,otroPokemon)-}
 
-
+--B
+cantidadDePokemonDe :: TipoDePokemon -> Entrenador -> Int
+cantidadDePokemonDe tipoDePokemon unEntrenador = 
 
 
 
