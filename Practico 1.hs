@@ -48,6 +48,7 @@ iguales Norte Norte = True
 iguales Sur Sur = True
 iguales Este Este = True
 iguales Oeste Oeste = True
+iguales _ _ = False
 
 --C
 siguiente :: Dir -> Dir
@@ -67,6 +68,7 @@ primeroYUltimoDia = (Lunes,Domingo)
 empiezaConM :: DiaDeSemana -> Bool
 empiezaConM Miercoles = True
 empiezaConM Martes = True
+empiezaConM _ = False
 
 --C
 vieneDespues :: DiaDeSemana -> DiaDeSemana -> Bool
@@ -77,16 +79,16 @@ vieneDespues Viernes Jueves = True
 vieneDespues Sabado Viernes = True
 vieneDespues Domingo Sabado = True
 vieneDespues Lunes Domingo = True 
+vieneDespues _ _ = False
 
 --D
 estaEnElMedio :: DiaDeSemana -> Bool
-estaEnElMedio Lunes = False
-estaEnElMedio Domingo = False
 estaEnElMedio Martes = True
 estaEnElMedio Miercoles = True
 estaEnElMedio Jueves = True
 estaEnElMedio Viernes = True
 estaEnElMedio Sabado = True
+estaEnElMedio _ = False
 
 {-3-}
 --A
@@ -108,8 +110,7 @@ yTambien _ _ = False
 --D
 oBien :: Bool -> Bool -> Bool
 oBien True _ = True
-oBien _ True = True
-oBien _ _ = False
+oBien _ a = a
 
 
                 {-Funciones Registros-}
