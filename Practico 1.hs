@@ -97,20 +97,17 @@ negar True = False
 negar False = True
 
 --B
-implica :: Bool -> Bool -> Bool
-implica True False = False
-implica _ _ = True 
 
+implica :: Bool -> Bool -> Bool
+implica p q = oBien (negar p) q
 
 --C
 yTambien :: Bool -> Bool -> Bool
-yTambien True True = True
-yTambien _ _ = False
+yTambien p q = p && q
 
 --D
 oBien :: Bool -> Bool -> Bool
-oBien True _ = True
-oBien _ a = a
+oBien p q = p || q 
 
 
                 {-Funciones Registros-}
