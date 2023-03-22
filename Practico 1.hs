@@ -103,14 +103,19 @@ implica p q = oBien (negar p) q
 
 --C
 yTambien :: Bool -> Bool -> Bool
-yTambien p q = p && q
+yTambien p q =
+     case p of
+          True -> q 
+          False -> False
 
 --D
 oBien :: Bool -> Bool -> Bool
-oBien p q = p || q 
+oBien p q =
+     case p of
+          True ->True
+          False -> q
 
-
-                {-Funciones Registros-}
+               {-Funciones Registros-}
 data Persona = Persona String Int deriving Show
                        --Nombre Edad
 yo = Persona "Ivan" 21
@@ -125,8 +130,6 @@ edad :: Persona -> Int
 edad (Persona nombre edad) = edad
 
 --C
-{-crecer :: Persona -> Persona
-crecer (Persona nombre edad) = (Persona nombre (sumar edad 1))-}
 crecer :: Persona -> Int
 crecer (Persona nombre edad) = sumar edad 1
 
@@ -172,8 +175,6 @@ tipoDePokemonLeGanaA Fuego Planta = True
 tipoDePokemonLeGanaA Planta Agua = True
 tipoDePokemonLeGanaA _ _ = False
 
-{-tuplaPokemon :: Pokemon -> Pokemon -> (Pokemon,Pokemon)
-tuplaPokemon unPokemon otroPokemon = (unPokemon,otroPokemon)-}
 
 --B
 
