@@ -62,9 +62,46 @@ lasDeLongitudMayorA b (l:ls) = if longitud l > b
 --11
 
 agregarAlFinal :: [a] -> a -> [a]
-agregarAlFinal (x:xs) a = if x == []
-                          then 
-                          else agregarAlFinal xs
+--agregarAlFinal [] b = b : []
+agregarAlFinal a b = agregar a (b :[]) 
+
+--12
+agregar :: [a] -> [a] -> [a]
+agregar [] b = b
+agregar (x:xs) b = x : agregar xs b
+
+--13
+reversa :: [a] -> [a]
+reversa [] = []
+reversa(x:xs) =  reversa xs ++ [x] 
+
+-- 14
+elMayorDe :: Int -> Int -> Int
+elMayorDe a b = if a > b
+                then a
+                else b
+
+zipMaximos :: [Int] -> [Int] -> [Int]
+zipMaximos [] _ = [] --preguntar
+zipMaximos _ [] = []
+zipMaximos (x:xs) (y:ys) = elMayorDe x y : (zipMaximos xs ys)
+
+-- 15
+
+minimoEntre :: Int -> Int -> Int
+minimoEntre a b = if a < b 
+                  then a 
+                  else b
+
+elMinimo :: Ord a => [a] -> a
+elMinimo [] = 0
+elMinimo[a] = a
+elMinimo(x:xs) = minimoEntre x (elMinimo xs)
+
+
+
+
+
 
 
 
