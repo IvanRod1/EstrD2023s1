@@ -23,6 +23,9 @@ maxDelPar (n, m) = if (n > m)
 
 --sumar ((sucesor (maxDelPar (divisionYResto 16 2)))) 1
 --sucesor (sumar (maxDelPar (divisionYResto 4 2)) (sumar 5 2))
+--maxDelPar (divisionYResto (sumar 45 5) (sucesor 4))
+--sumar (maxDelPar(divisionYResto 36 6)) (sucesor 3)
+
 
 
                 {-Funciones Tipos enumerativos-}
