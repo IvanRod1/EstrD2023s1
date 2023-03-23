@@ -225,7 +225,7 @@ swap (a,b) = (b,a)
 --A
 estaVacia :: [a] -> Bool 
 estaVacia [] = True
-estaVacia [_] = False    
+estaVacia (_:_) = False    
 
 --B
 elPrimero :: [a] -> a
