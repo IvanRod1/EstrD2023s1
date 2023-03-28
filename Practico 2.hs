@@ -83,28 +83,284 @@ elMayorDe a b = if a > b
 
 zipMaximos :: [Int] -> [Int] -> [Int]
 zipMaximos [] _ = [] --preguntar
-zipMaximos _ [] = []
+zipMaximos (x:xs) [] = []
 zipMaximos (x:xs) (y:ys) = elMayorDe x y : (zipMaximos xs ys)
 
--- 15
+{-zip1 :: [a] -> [b] -> [(a,b)]
+zip1[] _ = []
+zip1 (x:xs) [] = []
+zip1 (x:xs) (y:ys) = (x,y) : zip1 xs ys-}
 
-minimoEntre :: Int -> Int -> Int
+-- 15
+minimoEntre :: Ord a => a -> a -> a
 minimoEntre a b = if a < b 
                   then a 
                   else b
 
 elMinimo :: Ord a => [a] -> a
-elMinimo [] = 0
+elMinimo [] = error "No hay nada"
 elMinimo[a] = a
-elMinimo(x:xs) = minimoEntre x (elMinimo xs)
+elMinimo(x:xs) = minimoEntre (x) (elMinimo xs)
+
+                            {-Recursión sobre números-}
+--1
+factorial :: Int -> Int
+factorial 0 = 1
+factorial n = n * factorial (n - 1)
+
+--2
+cuentaRegresiva :: Int -> [Int]
+cuentaRegresiva 0 = []
+cuentaRegresiva n = n : cuentaRegresiva (n - 1)
+
+--3
+repetir :: Int -> a -> [a]
+repetir 0 _ = []
+repetir n a = a : repetir (n - 1) a 
+
+--4
+losPrimeros :: Int -> [a] -> [a]
+losPrimeros _ [] = []
+losPrimeros 0 _ = []
+losPrimeros n (x:xs) = x : losPrimeros (n - 1) xs  
+
+--5
+sinLosPrimeros :: Int -> [a] -> [a]
+sinLosPrimeros _ [] = []
+sinLosPrimeros 0 a = a
+sinLosPrimeros n (x:xs) = if (n <= 0)
+                          then x : sinLosPrimeros n xs
+                          else sinLosPrimeros (n - 1) xs
+
+                                    {-Registros-}
+data Persona = P String Int deriving Show
+pepe = P "pepe" 32
+pola = P "polaco" 23
+kike = P "KIKE" 56
+{-1-}
+
+edad :: Persona -> Int
+edad (P _ edad) = edad
+--A
+mayoresA :: Int -> [Persona] -> [Persona]
+mayoresA 0 a = a
+mayoresA _ [] = []
+mayoresA n (x:xs) = if edad (x) >= n
+                    then x : mayoresA n xs
+                    else mayoresA n xs
+
+--B
+promedioEdad :: [Persona] -> Int
+--Precondición: la lista al menos posee una persona.
+promedioEdad [] = 0
+promedioEdad a  = div (sumatoriaDeEdades a) (longitud a)
+
+sumatoriaDeEdades::[Persona] -> Int
+sumatoriaDeEdades [] = 0
+sumatoriaDeEdades(x:xs) = edad x + sumatoriaDeEdades xs
+
+--C
+elMasViejo :: [Persona] -> Persona
+elMasViejo [] = error "No hay persona"
+elMasViejo [a] = a
+elMasViejo(x:xs) = maximaEdadEntre (x) (elMasViejo xs)
+
+maximaEdadEntre :: Persona -> Persona -> Persona
+maximaEdadEntre p1 p2 = if (edad p1 > edad p2) 
+                        then p1 
+                        else p2
+
+{-2-}
+
+data TipoDePokemon = Agua | Fuego | Planta deriving Show
+data Pokemon = ConsPokemon TipoDePokemon Int deriving Show
+data Entrenador = ConsEntrenador String [Pokemon] deriving Show
+
+balastoid = ConsPokemon Agua 100
+chakarita = ConsPokemon Planta 90
+chorizord = ConsPokemon Fuego 110
+
+
+ash = ConsEntrenador "Ash" [balastoid,chakarita,chorizord]
+jamemes = ConsEntrenador "Jamemes" [chorizord,chakarita]
+
+--A
+cantPokemon :: Entrenador -> Int
+cantPokemon (ConsEntrenador _ pokemones) = longitud pokemones
+
+--B
 
 
 
+cantPokemonDe :: TipoDePokemon -> Entrenador -> Int
+cantPokemonDe tp ep = longitud (pokemonesDelTipo_En_ (tp) (listPokemon ep))
 
 
+pokemonesDelTipo_En_:: TipoDePokemon -> [Pokemon] -> [Pokemon]
+pokemonesDelTipo_En_ tp [] = []
+pokemonesDelTipo_En_ tp (x:xs) = if comparadorDeTiposDePokemon (tp) (tipo x)
+                                 then x : pokemonesDelTipo_En_ tp xs
+                                 else pokemonesDelTipo_En_ tp xs
 
 
+listPokemon :: Entrenador -> [Pokemon]
+listPokemon (ConsEntrenador _ pokemones) = pokemones
 
+tipo :: Pokemon -> TipoDePokemon
+tipo (ConsPokemon tipoDePokemon _) = tipoDePokemon 
+
+
+comparadorDeTiposDePokemon :: TipoDePokemon -> TipoDePokemon-> Bool
+comparadorDeTiposDePokemon Agua Agua = True
+comparadorDeTiposDePokemon Fuego Fuego = True
+comparadorDeTiposDePokemon Planta Planta = True
+comparadorDeTiposDePokemon _ _ = False
+
+--C
+
+cuantosDeTipo_De_LeGananATodosLosDe_ :: TipoDePokemon -> Entrenador -> Entrenador -> Int
+cuantosDeTipo_De_LeGananATodosLosDe_ tp ep1 ep2 = longitud(pokemonesDe_QueGanaronContraPokemonesDe_ (pokemonesDelTipo_En_ tp (listPokemon ep1)) (listPokemon ep2))
+
+pokemonesDe_QueGanaronContraPokemonesDe_:: [Pokemon] -> [Pokemon] -> [Pokemon]
+pokemonesDe_QueGanaronContraPokemonesDe_ [] _ = []
+pokemonesDe_QueGanaronContraPokemonesDe_ _ [] = []
+pokemonesDe_QueGanaronContraPokemonesDe_ (x:xs) (y:ys)= if tipoDePokemonLeGanaA (tipo x) (tipo y)
+                                                        then x : pokemonesDe_QueGanaronContraPokemonesDe_ xs ys
+                                                        else pokemonesDe_QueGanaronContraPokemonesDe_ xs ys
+
+tipoDePokemonLeGanaA :: TipoDePokemon -> TipoDePokemon -> Bool
+tipoDePokemonLeGanaA Agua Fuego = True
+tipoDePokemonLeGanaA Fuego Planta = True
+tipoDePokemonLeGanaA Planta Agua = True
+tipoDePokemonLeGanaA _ _ = False
+
+{-pokemonesDelTipo_En_:: TipoDePokemon -> [Pokemon] -> [Pokemon]
+pokemonesDelTipo_En_ tp [] = []
+pokemonesDelTipo_En_ tp (x:xs) = if comparadorDeTiposDePokemon (tp) (tipo x)
+                                 then x : pokemonesDelTipo_En_ tp xs
+                                 else pokemonesDelTipo_En_ tp xs
+Lo pongo aca para recordar -}
+
+--D
+esMaestroPokemon :: Entrenador -> Bool
+esMaestroPokemon ep = (tienePokemonTipo Agua (listPokemon ep)) && (tienePokemonTipo Fuego (listPokemon ep)) && (tienePokemonTipo Planta (listPokemon ep))
+
+tienePokemonTipo :: TipoDePokemon -> [Pokemon] -> Bool
+tienePokemonTipo tp [] = False
+tienePokemonTipo tp (x:xs) = if comparadorDeTiposDePokemon (tipo x) tp
+                              then True
+                              else tienePokemonTipo tp xs
+
+------------ no tener en cuenta
+{-tienePokemonTipo1 :: TipoDePokemon -> [Pokemon] -> [Bool]
+tienePokemonTipo1 tp [] = []
+tienePokemonTipo1 tp (x:xs) = comparadorDeTiposDePokemon (tipo x) tp : tienePokemonTipo tp xs-}
+
+{-3-}
+
+data Seniority = Junior | SemiSenior | Senior deriving Show
+data Proyecto = ConsProyecto String deriving Show
+data Rol = Developer Seniority Proyecto | Management Seniority Proyecto deriving Show
+data Empresa = ConsEmpresa [Rol] deriving Show
+
+pacopaco = ConsProyecto "pacopaco"
+eskaip = ConsProyecto "eskaip"
+zomboid = ConsProyecto "zomboid"
+
+juanDeveloper = Developer Senior pacopaco
+mikeManagement = Management SemiSenior eskaip
+joseDeveloper = Developer SemiSenior pacopaco
+polaManagement = Management Senior eskaip
+miloDeveloper = Developer Junior pacopaco
+
+stean = ConsEmpresa [juanDeveloper,mikeManagement,joseDeveloper,polaManagement,miloDeveloper]
+
+
+--A
+--Dada una empresa denota la lista de proyectos en los que trabaja, sin elementos repetidos.
+proyectos :: Empresa -> [Proyecto]
+proyectos e = rolesDeLosProyectosDeLaEmpresa (rolesEmpresa e)
+
+
+rolesEmpresa :: Empresa -> [Rol]
+rolesEmpresa (ConsEmpresa rol) = rol
+
+rolesDeLosProyectosDeLaEmpresa :: [Rol] -> [Proyecto]
+rolesDeLosProyectosDeLaEmpresa [] = []
+rolesDeLosProyectosDeLaEmpresa (x:xs) = if perteneceAlRol (proyectoDeUnRol x) (xs)
+                                        then rolesDeLosProyectosDeLaEmpresa xs
+                                        else proyectoDeUnRol(x) : rolesDeLosProyectosDeLaEmpresa xs
+                                        
+
+perteneceAlRol :: Proyecto -> [Rol] -> Bool 
+perteneceAlRol p [] = False
+perteneceAlRol p (x:xs) = if ((nombreProyecto p) == nombreProyecto (proyectoDeUnRol x))
+                          then True
+                          else perteneceAlRol p xs
+
+nombreProyecto :: Proyecto -> String
+nombreProyecto (ConsProyecto s) = s
+
+proyectoDeUnRol :: Rol -> Proyecto
+proyectoDeUnRol rol =
+    case rol of 
+        Developer _ _-> proyectoDeveloper rol
+        Management _ _-> proyectoManagement rol 
+
+proyectoDeveloper :: Rol -> Proyecto
+proyectoDeveloper (Developer _ p) = p
+
+proyectoManagement :: Rol -> Proyecto
+proyectoManagement (Management _ p) = p 
+
+--B
+losDevSenior :: Empresa -> [Proyecto] -> Int
+losDevSenior e [] = 0
+losDevSenior e lp = cantidadSeniorEnListaDeRoles (rolesDondeLosProyectos_EstanPresentes lp (rolesEmpresa e))
+    
+    
+cantidadSeniorEnListaDeRoles :: [Rol] -> Int
+cantidadSeniorEnListaDeRoles [] = 0
+cantidadSeniorEnListaDeRoles (x:xs) = if hayDevSeniorEn x
+                                      then 1 + cantidadSeniorEnListaDeRoles xs
+                                      else cantidadSeniorEnListaDeRoles xs
+
+hayDevSeniorEn :: Rol -> Bool
+hayDevSeniorEn p =
+    case seniorityDeUnRol p of
+        Senior -> True
+        Junior -> False
+        SemiSenior -> False
+
+estaElProyectoEnLaListaDeRoles :: Proyecto -> [Rol] -> Rol
+estaElProyectoEnLaListaDeRoles p [] = error "El Proyecto no esta en la lista de roles"
+estaElProyectoEnLaListaDeRoles p (x:xs) = if (nombreProyecto p) == nombreProyecto(proyectoDeUnRol x)
+                                          then x
+                                          else estaElProyectoEnLaListaDeRoles p xs
+
+rolesDondeLosProyectos_EstanPresentes :: [Proyecto] -> [Rol] -> [Rol]
+rolesDondeLosProyectos_EstanPresentes [] [] = []
+rolesDondeLosProyectos_EstanPresentes (x:xs) [] = []
+rolesDondeLosProyectos_EstanPresentes [] (y:ys) = []
+rolesDondeLosProyectos_EstanPresentes (x:xs) (y:ys) = estaElProyectoEnLaListaDeRoles x ys : rolesDondeLosProyectos_EstanPresentes xs ys
+
+seniorityDeUnRol :: Rol -> Seniority
+seniorityDeUnRol r =
+    case r of
+        Management _ _ -> seniorityManagement r  
+        Developer _ _ -> seniorityDeveloper r
+
+seniorityDeveloper :: Rol -> Seniority
+seniorityDeveloper (Developer s _) = s
+
+seniorityManagement :: Rol -> Seniority
+seniorityManagement (Management s _) = s
+
+--C
+{-cantQueTrabajanEn :: [Proyecto] -> Empresa -> Int
+--Indica la cantidad de empleados que trabajan en alguno de los proyectos dados.
+cantQueTrabajanEn [] e = 0
+cantQueTrabajanEn lp e = -}
 
 
 
