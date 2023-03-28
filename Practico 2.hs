@@ -7,7 +7,7 @@ sumatoria (x:xs) = x + sumatoria xs
 --2
 longitud :: [a] -> Int
 longitud [] = 0
-longitud (x:xs) = 1 + longitud xs
+longitud (_:xs) = 1 + longitud xs
 
 --3
 sucesores :: [Int] -> [Int]
@@ -283,9 +283,11 @@ proyectos e = rolesDeLosProyectosDeLaEmpresa (rolesEmpresa e)
 
 
 rolesEmpresa :: Empresa -> [Rol]
+-- Funcion observadora para obtener la lista de roles de la empresa dada
 rolesEmpresa (ConsEmpresa rol) = rol
 
 rolesDeLosProyectosDeLaEmpresa :: [Rol] -> [Proyecto]
+-- Dado una lista de roles, devuelve una lista de proyectos, que los mismos pertenecen a los roles dados
 rolesDeLosProyectosDeLaEmpresa [] = []
 rolesDeLosProyectosDeLaEmpresa (x:xs) = if perteneceAlRol (proyectoDeUnRol x) (xs)
                                         then rolesDeLosProyectosDeLaEmpresa xs
@@ -293,6 +295,7 @@ rolesDeLosProyectosDeLaEmpresa (x:xs) = if perteneceAlRol (proyectoDeUnRol x) (x
                                         
 
 perteneceAlRol :: Proyecto -> [Rol] -> Bool 
+-- Indica si el proyecto dado, pertenece a algun rol dentro de la lista
 perteneceAlRol p [] = False
 perteneceAlRol p (x:xs) = if ((nombreProyecto p) == nombreProyecto (proyectoDeUnRol x))
                           then True
@@ -302,65 +305,102 @@ nombreProyecto :: Proyecto -> String
 nombreProyecto (ConsProyecto s) = s
 
 proyectoDeUnRol :: Rol -> Proyecto
+-- Denota un proyecto del rol dado
 proyectoDeUnRol rol =
     case rol of 
         Developer _ _-> proyectoDeveloper rol
         Management _ _-> proyectoManagement rol 
 
 proyectoDeveloper :: Rol -> Proyecto
+--Funcion observadora para obtener el proyecto de un rol Developer
 proyectoDeveloper (Developer _ p) = p
 
 proyectoManagement :: Rol -> Proyecto
+--Funcion observadora para obtener el proyecto de un rol Management
 proyectoManagement (Management _ p) = p 
 
 --B
 losDevSenior :: Empresa -> [Proyecto] -> Int
+-- Dado una empresa y una lista de proyectos, devuelve la cantidad de Seniors que hay en la empresa dada trabajando en alguno de los proyectos dados
 losDevSenior e [] = 0
 losDevSenior e lp = cantidadSeniorEnListaDeRoles (rolesDondeLosProyectos_EstanPresentes lp (rolesEmpresa e))
     
     
 cantidadSeniorEnListaDeRoles :: [Rol] -> Int
+-- Dado una lista de roles, devuelve la cantidad de roles cuyo management sea Senior
 cantidadSeniorEnListaDeRoles [] = 0
 cantidadSeniorEnListaDeRoles (x:xs) = if hayDevSeniorEn x
                                       then 1 + cantidadSeniorEnListaDeRoles xs
                                       else cantidadSeniorEnListaDeRoles xs
 
 hayDevSeniorEn :: Rol -> Bool
+-- Indica si el seniority de un rol dado, es Senior
 hayDevSeniorEn p =
     case seniorityDeUnRol p of
         Senior -> True
         Junior -> False
         SemiSenior -> False
 
+       
+
 estaElProyectoEnLaListaDeRoles :: Proyecto -> [Rol] -> Rol
+--Dado un proyecto y una lista de royes, devuelve un rol cuyo proyecto sea el proyecto dado
 estaElProyectoEnLaListaDeRoles p [] = error "El Proyecto no esta en la lista de roles"
 estaElProyectoEnLaListaDeRoles p (x:xs) = if (nombreProyecto p) == nombreProyecto(proyectoDeUnRol x)
                                           then x
                                           else estaElProyectoEnLaListaDeRoles p xs
 
 rolesDondeLosProyectos_EstanPresentes :: [Proyecto] -> [Rol] -> [Rol]
+--Dado una lista de proyectos y una lista de roles, devuelve una lista de roles cuyo proyectos sean lo que aparecen en la lista de proyectos
 rolesDondeLosProyectos_EstanPresentes [] [] = []
 rolesDondeLosProyectos_EstanPresentes (x:xs) [] = []
 rolesDondeLosProyectos_EstanPresentes [] (y:ys) = []
 rolesDondeLosProyectos_EstanPresentes (x:xs) (y:ys) = estaElProyectoEnLaListaDeRoles x ys : rolesDondeLosProyectos_EstanPresentes xs ys
 
 seniorityDeUnRol :: Rol -> Seniority
+-- Funcion que sirve para obtener el Seniority de cualquier tipo de rol (Management, Developer)
 seniorityDeUnRol r =
     case r of
         Management _ _ -> seniorityManagement r  
         Developer _ _ -> seniorityDeveloper r
 
 seniorityDeveloper :: Rol -> Seniority
+--Funcion observadora para obtener el Seniority de un rol tipo Developer
 seniorityDeveloper (Developer s _) = s
 
 seniorityManagement :: Rol -> Seniority
+--Funcion observadora para obtener el Seniority de un rol tipo Management
 seniorityManagement (Management s _) = s
 
 --C
-{-cantQueTrabajanEn :: [Proyecto] -> Empresa -> Int
+cantQueTrabajanEn :: [Proyecto] -> Empresa -> Int
 --Indica la cantidad de empleados que trabajan en alguno de los proyectos dados.
 cantQueTrabajanEn [] e = 0
-cantQueTrabajanEn lp e = -}
+cantQueTrabajanEn (x:xs) e = longitud(rolesImplicadosEnElProyecto x (rolesEmpresa e)) + cantQueTrabajanEn xs e 
+
+rolesImplicadosEnElProyecto :: Proyecto -> [Rol] -> [Rol]
+--rolesDondeLosProyectos_EstanPresentes (proyectos stean) (rolesEmpresa stean)
+--Esta funcion devuelve una lista de roles que estan presentes en el proyecto dado
+rolesImplicadosEnElProyecto p [] = []
+rolesImplicadosEnElProyecto p (x:xs) = if nombreProyecto p == nombreProyecto(proyectoDeUnRol x)
+                                       then x : rolesImplicadosEnElProyecto p xs
+                                       else rolesImplicadosEnElProyecto p xs
+
+--D
+--asignadosPorProyecto :: Empresa -> [(Proyecto, Int)]
+--Devuelve una lista de pares que representa a los proyectos (sin repetir) junto con su cantidad de personas involucradas.
+--asignadosPorProyecto e =
+
+proyectosConSuCantidadDeEmpleados :: [Proyecto] -> [Rol] -> [(Proyecto,Int)]
+-- Dado una lista de proyectos devuelve una lista de tuplas
+proyectosConSuCantidadDeEmpleados [] [] = []
+proyectosConSuCantidadDeEmpleados _ [] = []
+proyectosConSuCantidadDeEmpleados [] _ = []
+
+proyectosConSuCantidadDeEmpleados(x:xs) (_:ys) = (x,longitud(rolesImplicadosEnElProyecto x ys)) : proyectosConSuCantidadDeEmpleados xs ys
+
+
+
 
 
 
