@@ -75,29 +75,45 @@ empiezaConM _ = False
 
 --C
 vieneDespues :: DiaDeSemana -> DiaDeSemana -> Bool
-vieneDespues Martes Lunes = True
+{-vieneDespues Martes Lunes = True
 vieneDespues Miercoles Martes = True
 vieneDespues Jueves Miercoles = True
 vieneDespues Viernes Jueves = True
 vieneDespues Sabado Viernes = True
 vieneDespues Domingo Sabado = True
 vieneDespues Lunes Domingo = True 
-vieneDespues _ _ = False
+vieneDespues _ _ = False-}
+vieneDespues a b = (numeroDelDiaDeUnaSemana a) > (numeroDelDiaDeUnaSemana b)
+
+numeroDelDiaDeUnaSemana :: DiaDeSemana -> Int
+numeroDelDiaDeUnaSemana dia =
+          case dia of
+          Lunes -> 1
+          Martes -> 2
+          Miercoles -> 3
+          Jueves -> 4
+          Viernes -> 5
+          Sabado -> 6
+          Domingo -> 7
 
 --D
 estaEnElMedio :: DiaDeSemana -> Bool
-estaEnElMedio Martes = True
+{-estaEnElMedio Martes = True
 estaEnElMedio Miercoles = True
 estaEnElMedio Jueves = True
 estaEnElMedio Viernes = True
 estaEnElMedio Sabado = True
-estaEnElMedio _ = False
+estaEnElMedio _ = False-}
+
+estaEnElMedio Lunes = False
+estaEnElMedio Domingo = False
+estaEnElMedio _ = True
 
 {-3-}
 --A
 negar :: Bool -> Bool
 negar True = False
-negar False = True
+negar _ = True
 
 --B
 
@@ -133,8 +149,8 @@ edad :: Persona -> Int
 edad (Persona nombre edad) = edad
 
 --C
-crecer :: Persona -> Int
-crecer (Persona nombre edad) = sumar edad 1
+crecer :: Persona -> Persona
+crecer (Persona nombre edad) = (Persona nombre (sumar edad 1))
 
 --D
 cambioDeNombre :: String -> Persona -> Persona
@@ -142,7 +158,13 @@ cambioDeNombre nuevoNombre (Persona nombre edad) = (Persona nuevoNombre edad)
 
 --E
 esMayorQueLaOtra :: Persona -> Persona -> Bool
-esMayorQueLaOtra unaPersona otraPersona = edad unaPersona > edad otraPersona 
+esMayorQueLaOtra unaPersona otraPersona = edad unaPersona > edad otraPersona
+
+--F
+laQueEsMayor :: Persona -> Persona -> Persona
+laQueEsMayor persona1 persona2 = if esMayorQueLaOtra persona1 persona2
+                                 then persona1
+                                 else persona2
 
 {-2-}
 
@@ -182,7 +204,7 @@ tipoDePokemonLeGanaA _ _ = False
 --B
 
 elPokemon_esDeTipo_ :: Pokemon -> TipoDePokemon -> Int
-elPokemon_esDeTipo_ unPokemon unTipoDePokemon = if (comparadorDeTiposDePokemon (tipo(unPokemon)) (unTipoDePokemon))
+elPokemon_esDeTipo_ unPokemon unTipoDePokemon = if comparadorDeTiposDePokemon (tipo(unPokemon)) ((unTipoDePokemon))
                                                 then 1
                                                 else 0 
 
@@ -193,7 +215,7 @@ comparadorDeTiposDePokemon Planta Planta = True
 comparadorDeTiposDePokemon _ _ = False
 
 cantidadDePokemonDe :: TipoDePokemon -> Entrenador -> Int
-cantidadDePokemonDe tipoDePokemon unEntrenador = elPokemon_esDeTipo_  (pokemon1(unEntrenador)) (tipoDePokemon) + elPokemon_esDeTipo_ (pokemon2(unEntrenador)) (tipoDePokemon)
+cantidadDePokemonDe tipoDePokemon unEntrenador = elPokemon_esDeTipo_ (pokemon1(unEntrenador)) tipoDePokemon + elPokemon_esDeTipo_ (pokemon2(unEntrenador)) tipoDePokemon
 
 --C
 
@@ -201,7 +223,8 @@ juntarPokemon :: (Entrenador, Entrenador) -> [Pokemon]
 juntarPokemon (unEntrenador,otroEntrenador) = listaPokemonDe_ unEntrenador ++ listaPokemonDe_ otroEntrenador
 
 listaPokemonDe_ :: Entrenador -> [Pokemon]
-listaPokemonDe_ unEntrenador = (pokemon1(unEntrenador) : []) ++ (pokemon2(unEntrenador) : [])
+listaPokemonDe_ unEntrenador = --(pokemon1(unEntrenador) : []) ++ (pokemon2(unEntrenador) : [])
+                                [pokemon1(unEntrenador)] ++ [pokemon2(unEntrenador)]
 
                               {-Funciones polimórficas-}
 {-1-}
@@ -225,7 +248,7 @@ swap (a,b) = (b,a)
 --A
 estaVacia :: [a] -> Bool 
 estaVacia [] = True
-estaVacia (_:_) = False    
+estaVacia _ = False    
 
 --B
 elPrimero :: [a] -> a
@@ -237,8 +260,7 @@ sinElPrimero(_:a) = a
 
 --D
 splitHead :: [a] -> (a, [a])
-splitHead a = ((elPrimero a), (sinElPrimero a))
-
+splitHead a = (elPrimero a, sinElPrimero a)
 
 
 
