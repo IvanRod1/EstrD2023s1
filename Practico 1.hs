@@ -125,14 +125,14 @@ yTambien :: Bool -> Bool -> Bool
 yTambien p q =
      case p of
           True -> q 
-          False -> False
+          _ -> False
 
 --D
 oBien :: Bool -> Bool -> Bool
 oBien p q =
      case p of
           True ->True
-          False -> q
+          _ -> q
 
                {-Funciones Registros-}
 data Persona = Persona String Int deriving Show
