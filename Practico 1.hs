@@ -15,7 +15,7 @@ divisionYResto n m = (div n m, mod n m)
 
 --D
 maxDelPar :: (Int,Int) -> Int
-maxDelPar (n, m) = if (n > m)
+maxDelPar (n, m) = if n > m
                     then n
                     else m
 
@@ -58,7 +58,6 @@ siguiente :: Dir -> Dir
 siguiente Norte = Este
 siguiente Este = Sur
 siguiente Sur = Oeste
-siguiente Oeste = Norte
 
 {-2-}
 data DiaDeSemana = Lunes|Martes|Miercoles|Jueves|Viernes|Sabado|Domingo
@@ -150,11 +149,11 @@ edad (Persona nombre edad) = edad
 
 --C
 crecer :: Persona -> Persona
-crecer (Persona nombre edad) = (Persona nombre (sumar edad 1))
+crecer (Persona nombre edad) = Persona nombre (sumar edad 1)
 
 --D
 cambioDeNombre :: String -> Persona -> Persona
-cambioDeNombre nuevoNombre (Persona nombre edad) = (Persona nuevoNombre edad) 
+cambioDeNombre nuevoNombre (Persona nombre edad) = Persona nuevoNombre edad 
 
 --E
 esMayorQueLaOtra :: Persona -> Persona -> Bool
