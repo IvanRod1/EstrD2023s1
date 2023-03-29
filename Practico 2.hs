@@ -17,10 +17,17 @@ sucesores (x:xs) = x + 1 : sucesores xs
 --4
 conjuncion :: [Bool] -> Bool
 conjuncion [] = False
-conjuncion (b:bs) = b && if null bs
-                            then b
-                            else last bs
+conjuncion (b:bs) = b && if estaVacia bs
+                         then b 
+                         else conjuncion bs
 
+                            {-if estaVacia bs
+                            then b
+                            else last bs-}
+
+estaVacia :: [a] -> Bool 
+estaVacia [] = True
+estaVacia _ = False
 --5
 
 disyuncion :: [Bool] -> Bool
@@ -56,14 +63,13 @@ losMenoresA b (x:xs) = if x < b
 lasDeLongitudMayorA :: Int -> [[a]] -> [[a]]
 lasDeLongitudMayorA b [] = []
 lasDeLongitudMayorA b (l:ls) = if longitud l > b
-                               then [l] ++ (lasDeLongitudMayorA b ls)
+                               then [l] ++ lasDeLongitudMayorA b ls
                                else lasDeLongitudMayorA b ls
 
 --11
-
 agregarAlFinal :: [a] -> a -> [a]
 --agregarAlFinal [] b = b : []
-agregarAlFinal a b = agregar a (b :[]) 
+agregarAlFinal a b = agregar a [b] 
 
 --12
 agregar :: [a] -> [a] -> [a]
@@ -84,7 +90,7 @@ elMayorDe a b = if a > b
 zipMaximos :: [Int] -> [Int] -> [Int]
 zipMaximos [] _ = [] --preguntar
 zipMaximos (x:xs) [] = []
-zipMaximos (x:xs) (y:ys) = elMayorDe x y : (zipMaximos xs ys)
+zipMaximos (x:xs) (y:ys) = elMayorDe x y : zipMaximos xs ys 
 
 {-zip1 :: [a] -> [b] -> [(a,b)]
 zip1[] _ = []
@@ -100,7 +106,7 @@ minimoEntre a b = if a < b
 elMinimo :: Ord a => [a] -> a
 elMinimo [] = error "No hay nada"
 elMinimo[a] = a
-elMinimo(x:xs) = minimoEntre (x) (elMinimo xs)
+elMinimo(x:xs) = minimoEntre x (elMinimo xs)
 
                             {-Recursión sobre números-}
 --1
@@ -163,10 +169,10 @@ sumatoriaDeEdades(x:xs) = edad x + sumatoriaDeEdades xs
 elMasViejo :: [Persona] -> Persona
 elMasViejo [] = error "No hay persona"
 elMasViejo [a] = a
-elMasViejo(x:xs) = maximaEdadEntre (x) (elMasViejo xs)
+elMasViejo(x:xs) = maximaEdadEntre x (elMasViejo xs)
 
 maximaEdadEntre :: Persona -> Persona -> Persona
-maximaEdadEntre p1 p2 = if (edad p1 > edad p2) 
+maximaEdadEntre p1 p2 = if edad p1 > edad p2 
                         then p1 
                         else p2
 
@@ -193,12 +199,12 @@ cantPokemon (ConsEntrenador _ pokemones) = longitud pokemones
 
 
 cantPokemonDe :: TipoDePokemon -> Entrenador -> Int
-cantPokemonDe tp ep = longitud (pokemonesDelTipo_En_ (tp) (listPokemon ep))
+cantPokemonDe tp ep = longitud (pokemonesDelTipo_En_ tp (listPokemon ep))
 
 
 pokemonesDelTipo_En_:: TipoDePokemon -> [Pokemon] -> [Pokemon]
 pokemonesDelTipo_En_ tp [] = []
-pokemonesDelTipo_En_ tp (x:xs) = if comparadorDeTiposDePokemon (tp) (tipo x)
+pokemonesDelTipo_En_ tp (x:xs) = if comparadorDeTiposDePokemon tp (tipo x)
                                  then x : pokemonesDelTipo_En_ tp xs
                                  else pokemonesDelTipo_En_ tp xs
 
@@ -272,8 +278,9 @@ mikeManagement = Management SemiSenior eskaip
 joseDeveloper = Developer SemiSenior pacopaco
 polaManagement = Management Senior eskaip
 miloDeveloper = Developer Junior pacopaco
+solDeveloper = Developer Senior zomboid
 
-stean = ConsEmpresa [juanDeveloper,mikeManagement,joseDeveloper,polaManagement,miloDeveloper]
+stean = ConsEmpresa [juanDeveloper,mikeManagement,joseDeveloper,polaManagement,miloDeveloper,solDeveloper]
 
 
 --A
@@ -289,7 +296,7 @@ rolesEmpresa (ConsEmpresa rol) = rol
 rolesDeLosProyectosDeLaEmpresa :: [Rol] -> [Proyecto]
 -- Dado una lista de roles, devuelve una lista de proyectos, que los mismos pertenecen a los roles dados
 rolesDeLosProyectosDeLaEmpresa [] = []
-rolesDeLosProyectosDeLaEmpresa (x:xs) = if perteneceAlRol (proyectoDeUnRol x) (xs)
+rolesDeLosProyectosDeLaEmpresa (x:xs) = if perteneceAlRol (proyectoDeUnRol x) xs
                                         then rolesDeLosProyectosDeLaEmpresa xs
                                         else proyectoDeUnRol(x) : rolesDeLosProyectosDeLaEmpresa xs
                                         
@@ -351,6 +358,7 @@ estaElProyectoEnLaListaDeRoles p (x:xs) = if (nombreProyecto p) == nombreProyect
                                           else estaElProyectoEnLaListaDeRoles p xs
 
 rolesDondeLosProyectos_EstanPresentes :: [Proyecto] -> [Rol] -> [Rol]
+--rolesDondeLosProyectos_EstanPresentes (proyectos stean) (rolesEmpresa stean)
 --Dado una lista de proyectos y una lista de roles, devuelve una lista de roles cuyo proyectos sean lo que aparecen en la lista de proyectos
 rolesDondeLosProyectos_EstanPresentes [] [] = []
 rolesDondeLosProyectos_EstanPresentes (x:xs) [] = []
@@ -379,7 +387,7 @@ cantQueTrabajanEn [] e = 0
 cantQueTrabajanEn (x:xs) e = longitud(rolesImplicadosEnElProyecto x (rolesEmpresa e)) + cantQueTrabajanEn xs e 
 
 rolesImplicadosEnElProyecto :: Proyecto -> [Rol] -> [Rol]
---rolesDondeLosProyectos_EstanPresentes (proyectos stean) (rolesEmpresa stean)
+--rolesImplicadosEnElProyecto pacopaco (rolesEmpresa stean)
 --Esta funcion devuelve una lista de roles que estan presentes en el proyecto dado
 rolesImplicadosEnElProyecto p [] = []
 rolesImplicadosEnElProyecto p (x:xs) = if nombreProyecto p == nombreProyecto(proyectoDeUnRol x)
@@ -387,17 +395,18 @@ rolesImplicadosEnElProyecto p (x:xs) = if nombreProyecto p == nombreProyecto(pro
                                        else rolesImplicadosEnElProyecto p xs
 
 --D
---asignadosPorProyecto :: Empresa -> [(Proyecto, Int)]
+asignadosPorProyecto :: Empresa -> [(Proyecto, Int)]
 --Devuelve una lista de pares que representa a los proyectos (sin repetir) junto con su cantidad de personas involucradas.
---asignadosPorProyecto e =
+asignadosPorProyecto e = proyectosConSuCantidadDeEmpleados (proyectos e) (rolesEmpresa e)
 
 proyectosConSuCantidadDeEmpleados :: [Proyecto] -> [Rol] -> [(Proyecto,Int)]
 -- Dado una lista de proyectos devuelve una lista de tuplas
+-- proyectosConSuCantidadDeEmpleados (proyectos stean) (rolesEmpresa stean)
 proyectosConSuCantidadDeEmpleados [] [] = []
 proyectosConSuCantidadDeEmpleados _ [] = []
 proyectosConSuCantidadDeEmpleados [] _ = []
 
-proyectosConSuCantidadDeEmpleados(x:xs) (_:ys) = (x,longitud(rolesImplicadosEnElProyecto x ys)) : proyectosConSuCantidadDeEmpleados xs ys
+proyectosConSuCantidadDeEmpleados(x:xs) lr = (x,longitud(rolesImplicadosEnElProyecto x lr)) : proyectosConSuCantidadDeEmpleados xs lr
 
 
 
