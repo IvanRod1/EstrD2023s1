@@ -191,7 +191,7 @@ pokemon2 :: Entrenador -> Pokemon
 pokemon2 (Entrenador _ _ pokemon2) = pokemon2
 
 superaA :: Pokemon -> Pokemon -> Bool
-superaA unPokemon otroPokemon = tipoDePokemonLeGanaA (tipo(unPokemon)) (tipo(otroPokemon))
+superaA unPokemon otroPokemon = tipoDePokemonLeGanaA (tipo unPokemon ) (tipo otroPokemon)
 
 tipoDePokemonLeGanaA :: TipoDePokemon -> TipoDePokemon -> Bool
 tipoDePokemonLeGanaA Agua Fuego = True
@@ -203,7 +203,7 @@ tipoDePokemonLeGanaA _ _ = False
 --B
 
 elPokemon_esDeTipo_ :: Pokemon -> TipoDePokemon -> Int
-elPokemon_esDeTipo_ unPokemon unTipoDePokemon = if comparadorDeTiposDePokemon (tipo(unPokemon)) ((unTipoDePokemon))
+elPokemon_esDeTipo_ unPokemon unTipoDePokemon = if comparadorDeTiposDePokemon (tipo unPokemon) unTipoDePokemon
                                                 then 1
                                                 else 0 
 
@@ -214,7 +214,7 @@ comparadorDeTiposDePokemon Planta Planta = True
 comparadorDeTiposDePokemon _ _ = False
 
 cantidadDePokemonDe :: TipoDePokemon -> Entrenador -> Int
-cantidadDePokemonDe tipoDePokemon unEntrenador = elPokemon_esDeTipo_ (pokemon1(unEntrenador)) tipoDePokemon + elPokemon_esDeTipo_ (pokemon2(unEntrenador)) tipoDePokemon
+cantidadDePokemonDe tipoDePokemon unEntrenador = elPokemon_esDeTipo_ (pokemon1 unEntrenador) tipoDePokemon + elPokemon_esDeTipo_ (pokemon2 unEntrenador) tipoDePokemon
 
 --C
 
@@ -223,7 +223,7 @@ juntarPokemon (unEntrenador,otroEntrenador) = listaPokemonDe_ unEntrenador ++ li
 
 listaPokemonDe_ :: Entrenador -> [Pokemon]
 listaPokemonDe_ unEntrenador = --(pokemon1(unEntrenador) : []) ++ (pokemon2(unEntrenador) : [])
-                                pokemon1(unEntrenador) : [pokemon2(unEntrenador)]
+                                pokemon1 unEntrenador : [pokemon2 unEntrenador]
 
                               {-Funciones polimórficas-}
 {-1-}
