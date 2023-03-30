@@ -16,11 +16,8 @@ sucesores (x:xs) = x + 1 : sucesores xs
 
 --4
 conjuncion :: [Bool] -> Bool
-conjuncion [] = False
-conjuncion (b:bs) = b && if estaVacia bs
-                         then b 
-                         else conjuncion bs
-
+conjuncion [] = True
+conjuncion (b:bs) = b && conjuncion bs 
                             {-if estaVacia bs
                             then b
                             else last bs-}
@@ -63,7 +60,7 @@ losMenoresA b (x:xs) = if x < b
 lasDeLongitudMayorA :: Int -> [[a]] -> [[a]]
 lasDeLongitudMayorA b [] = []
 lasDeLongitudMayorA b (l:ls) = if longitud l > b
-                               then [l] ++ lasDeLongitudMayorA b ls
+                               then l : lasDeLongitudMayorA b ls
                                else lasDeLongitudMayorA b ls
 
 --11
@@ -88,8 +85,9 @@ elMayorDe a b = if a > b
                 else b
 
 zipMaximos :: [Int] -> [Int] -> [Int]
-zipMaximos [] _ = [] --preguntar
-zipMaximos (x:xs) [] = []
+zipMaximos [] [] = [] 
+zipMaximos a [] = a
+zipMaximos [] b = b
 zipMaximos (x:xs) (y:ys) = elMayorDe x y : zipMaximos xs ys 
 
 {-zip1 :: [a] -> [b] -> [(a,b)]
@@ -117,7 +115,10 @@ factorial n = n * factorial (n - 1)
 --2
 cuentaRegresiva :: Int -> [Int]
 cuentaRegresiva 0 = []
-cuentaRegresiva n = n : cuentaRegresiva (n - 1)
+cuentaRegresiva n = if n < 1
+                    then []
+                    else n : cuentaRegresiva (n - 1)
+
 
 --3
 repetir :: Int -> a -> [a]
@@ -133,8 +134,8 @@ losPrimeros n (x:xs) = x : losPrimeros (n - 1) xs
 --5
 sinLosPrimeros :: Int -> [a] -> [a]
 sinLosPrimeros _ [] = []
-sinLosPrimeros 0 a = a
-sinLosPrimeros n (x:xs) = if (n <= 0)
+sinLosPrimeros 0 (_:xs) = xs
+sinLosPrimeros n (x:xs) = if (n == 0)
                           then x : sinLosPrimeros n xs
                           else sinLosPrimeros (n - 1) xs
 
@@ -143,15 +144,15 @@ data Persona = P String Int deriving Show
 pepe = P "pepe" 32
 pola = P "polaco" 23
 kike = P "KIKE" 56
+uri = P "Uri" 0
 {-1-}
 
 edad :: Persona -> Int
 edad (P _ edad) = edad
 --A
 mayoresA :: Int -> [Persona] -> [Persona]
-mayoresA 0 a = a
 mayoresA _ [] = []
-mayoresA n (x:xs) = if edad (x) >= n
+mayoresA n (x:xs) = if edad x >= n
                     then x : mayoresA n xs
                     else mayoresA n xs
 
@@ -362,8 +363,8 @@ rolesDondeLosProyectos_EstanPresentes :: [Proyecto] -> [Rol] -> [Rol]
 --Dado una lista de proyectos y una lista de roles, devuelve una lista de roles cuyo proyectos sean lo que aparecen en la lista de proyectos
 rolesDondeLosProyectos_EstanPresentes [] [] = []
 rolesDondeLosProyectos_EstanPresentes (x:xs) [] = []
-rolesDondeLosProyectos_EstanPresentes [] (y:ys) = []
-rolesDondeLosProyectos_EstanPresentes (x:xs) (y:ys) = estaElProyectoEnLaListaDeRoles x ys : rolesDondeLosProyectos_EstanPresentes xs ys
+rolesDondeLosProyectos_EstanPresentes [] (_:ys) = []
+rolesDondeLosProyectos_EstanPresentes (x:xs) (_:ys) = estaElProyectoEnLaListaDeRoles x ys : rolesDondeLosProyectos_EstanPresentes xs ys
 
 seniorityDeUnRol :: Rol -> Seniority
 -- Funcion que sirve para obtener el Seniority de cualquier tipo de rol (Management, Developer)
