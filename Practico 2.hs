@@ -186,10 +186,11 @@ data Entrenador = ConsEntrenador String [Pokemon] deriving Show
 balastoid = ConsPokemon Agua 100
 chakarita = ConsPokemon Planta 90
 chorizord = ConsPokemon Fuego 110
+pochinki = ConsPokemon Agua 1000
 
 
-ash = ConsEntrenador "Ash" [balastoid,chakarita,chorizord]
-jamemes = ConsEntrenador "Jamemes" [chorizord,chakarita]
+ash = ConsEntrenador "Ash" [balastoid,chakarita,chorizord,pochinki]
+jamemes = ConsEntrenador "Jamemes" [chorizord,chorizord,chakarita]
 
 --A
 cantPokemon :: Entrenador -> Int
@@ -223,15 +224,17 @@ comparadorDeTiposDePokemon _ _ = False
 
 --C
 
---cuantosDeTipo_De_LeGananATodosLosDe_ :: TipoDePokemon -> Entrenador -> Entrenador -> Int
---cuantosDeTipo_De_LeGananATodosLosDe_ tp ep1 ep2 = 
+cuantosDeTipo_De_LeGananATodosLosDe_ :: TipoDePokemon -> Entrenador -> Entrenador -> Int
+--Dado un tipo de pokemon, y dos entrenadores, nos dice la cantidad de pokemones del tipo dado del primer entrenador que ganaron contra todos los pokemones del segundo entrenador
+cuantosDeTipo_De_LeGananATodosLosDe_ tp ep1 ep2 = longitud (pokemonesDelTipo_En_ tp (pokemonesDe_QueGanaronContraTodosLosPokemonesDe_ (listPokemon ep1) (listPokemon ep2)))
 
 pokemonesDe_QueGanaronContraTodosLosPokemonesDe_:: [Pokemon] -> [Pokemon] -> [Pokemon]
+-- Dado una dos listas de pokemon, devuelve una lista de pokemon de la primera lista de los cuales ganaron todas las peleas contra los pokemon de la segunda lista de pokemon
 pokemonesDe_QueGanaronContraTodosLosPokemonesDe_ [] _ = []
 pokemonesDe_QueGanaronContraTodosLosPokemonesDe_ _ [] = []
-pokemonesDe_QueGanaronContraTodosLosPokemonesDe_ (x:xs) (_:ys) = if pokemonContraListaDePokemones x ys
-                                                                 then x : pokemonesDe_QueGanaronContraPokemonesDe_ xs ys
-                                                                 else pokemonesDe_QueGanaronContraPokemonesDe_ xs ys
+pokemonesDe_QueGanaronContraTodosLosPokemonesDe_ (x:xs) lp = if pokemonContraListaDePokemones x lp
+                                                                 then x : pokemonesDe_QueGanaronContraTodosLosPokemonesDe_ xs lp
+                                                                 else pokemonesDe_QueGanaronContraTodosLosPokemonesDe_ xs lp 
     
                                                         {-if tipoDePokemonLeGanaA (tipo x) (tipo y)       <- Codigo malo
                                                         then x : pokemonesDe_QueGanaronContraPokemonesDe_ xs ys 
@@ -242,9 +245,11 @@ pokemonesDe_QueGanaronContraTodosLosPokemonesDe_ (x:xs) (_:ys) = if pokemonContr
 pokemonContraListaDePokemones :: Pokemon -> [Pokemon] -> Bool
 --Funcion para indicar si el pokemon dado, le gana a todos los pokemon de la lista de pokemones
 pokemonContraListaDePokemones p [] = True
-pokemonContraListaDePokemones  p (x:xs) = if tipoDePokemonLeGanaA (tipo p) (tipo x)
+pokemonContraListaDePokemones  p (x:xs) = tipoDePokemonLeGanaA (tipo p) (tipo x) && pokemonContraListaDePokemones p xs
+
+                                          {-if tipoDePokemonLeGanaA (tipo p) (tipo x)
                                           then pokemonContraListaDePokemones p xs
-                                          else tipoDePokemonLeGanaA (tipo p) (tipo x)
+                                          else tipoDePokemonLeGanaA (tipo p) (tipo x)-}
 
 tipoDePokemonLeGanaA :: TipoDePokemon -> TipoDePokemon -> Bool
 tipoDePokemonLeGanaA Agua Fuego = True
@@ -265,9 +270,10 @@ esMaestroPokemon ep = (tienePokemonTipo Agua (listPokemon ep)) && (tienePokemonT
 
 tienePokemonTipo :: TipoDePokemon -> [Pokemon] -> Bool
 tienePokemonTipo tp [] = False
-tienePokemonTipo tp (x:xs) = if comparadorDeTiposDePokemon (tipo x) tp
+tienePokemonTipo tp (x:xs) = comparadorDeTiposDePokemon (tipo x) tp || tienePokemonTipo tp xs 
+                            {-if comparadorDeTiposDePokemon (tipo x) tp
                               then True
-                              else tienePokemonTipo tp xs
+                              else tienePokemonTipo tp xs-}
 
 ------------ no tener en cuenta
 {-tienePokemonTipo1 :: TipoDePokemon -> [Pokemon] -> [Bool]
@@ -316,9 +322,11 @@ rolesDeLosProyectosDeLaEmpresa (x:xs) = if perteneceAlRol (proyectoDeUnRol x) xs
 perteneceAlRol :: Proyecto -> [Rol] -> Bool 
 -- Indica si el proyecto dado, pertenece a algun rol dentro de la lista
 perteneceAlRol p [] = False
-perteneceAlRol p (x:xs) = if ((nombreProyecto p) == nombreProyecto (proyectoDeUnRol x))
-                          then True
-                          else perteneceAlRol p xs
+perteneceAlRol p (x:xs) = nombreProyecto p == nombreProyecto (proyectoDeUnRol x) || perteneceAlRol p xs
+    
+                        {-if ((nombreProyecto p) == nombreProyecto (proyectoDeUnRol x))
+                          then True      -- <- miedo al bool 
+                          else perteneceAlRol p xs -}
 
 nombreProyecto :: Proyecto -> String
 nombreProyecto (ConsProyecto s) = s
