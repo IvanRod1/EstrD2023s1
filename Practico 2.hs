@@ -152,7 +152,7 @@ edad (P _ edad) = edad
 --A
 mayoresA :: Int -> [Persona] -> [Persona]
 mayoresA _ [] = []
-mayoresA n (x:xs) = if edad x >= n
+mayoresA n (x:xs) = if edad x > n
                     then x : mayoresA n xs
                     else mayoresA n xs
 
