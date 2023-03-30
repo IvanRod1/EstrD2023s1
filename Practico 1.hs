@@ -82,7 +82,7 @@ vieneDespues Sabado Viernes = True
 vieneDespues Domingo Sabado = True
 vieneDespues Lunes Domingo = True 
 vieneDespues _ _ = False-}
-vieneDespues a b = (numeroDelDiaDeUnaSemana a) > (numeroDelDiaDeUnaSemana b)
+vieneDespues a b =  numeroDelDiaDeUnaSemana a  >  numeroDelDiaDeUnaSemana b
 
 numeroDelDiaDeUnaSemana :: DiaDeSemana -> Int
 numeroDelDiaDeUnaSemana dia =
