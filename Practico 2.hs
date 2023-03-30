@@ -197,8 +197,6 @@ cantPokemon (ConsEntrenador _ pokemones) = longitud pokemones
 
 --B
 
-
-
 cantPokemonDe :: TipoDePokemon -> Entrenador -> Int
 cantPokemonDe tp ep = longitud (pokemonesDelTipo_En_ tp (listPokemon ep))
 
@@ -225,15 +223,28 @@ comparadorDeTiposDePokemon _ _ = False
 
 --C
 
-cuantosDeTipo_De_LeGananATodosLosDe_ :: TipoDePokemon -> Entrenador -> Entrenador -> Int
-cuantosDeTipo_De_LeGananATodosLosDe_ tp ep1 ep2 = longitud(pokemonesDe_QueGanaronContraPokemonesDe_ (pokemonesDelTipo_En_ tp (listPokemon ep1)) (listPokemon ep2))
+--cuantosDeTipo_De_LeGananATodosLosDe_ :: TipoDePokemon -> Entrenador -> Entrenador -> Int
+--cuantosDeTipo_De_LeGananATodosLosDe_ tp ep1 ep2 = 
 
-pokemonesDe_QueGanaronContraPokemonesDe_:: [Pokemon] -> [Pokemon] -> [Pokemon]
-pokemonesDe_QueGanaronContraPokemonesDe_ [] _ = []
-pokemonesDe_QueGanaronContraPokemonesDe_ _ [] = []
-pokemonesDe_QueGanaronContraPokemonesDe_ (x:xs) (y:ys)= if tipoDePokemonLeGanaA (tipo x) (tipo y)
-                                                        then x : pokemonesDe_QueGanaronContraPokemonesDe_ xs ys
-                                                        else pokemonesDe_QueGanaronContraPokemonesDe_ xs ys
+pokemonesDe_QueGanaronContraTodosLosPokemonesDe_:: [Pokemon] -> [Pokemon] -> [Pokemon]
+pokemonesDe_QueGanaronContraTodosLosPokemonesDe_ [] _ = []
+pokemonesDe_QueGanaronContraTodosLosPokemonesDe_ _ [] = []
+pokemonesDe_QueGanaronContraTodosLosPokemonesDe_ (x:xs) (_:ys) = if pokemonContraListaDePokemones x ys
+                                                                 then x : pokemonesDe_QueGanaronContraPokemonesDe_ xs ys
+                                                                 else pokemonesDe_QueGanaronContraPokemonesDe_ xs ys
+    
+                                                        {-if tipoDePokemonLeGanaA (tipo x) (tipo y)       <- Codigo malo
+                                                        then x : pokemonesDe_QueGanaronContraPokemonesDe_ xs ys 
+                                                        else pokemonesDe_QueGanaronContraPokemonesDe_ xs ys-}
+
+--funcion para verificar si un pokemon le gana a todos los de una lista de pokemon
+--que deberia devolver?
+pokemonContraListaDePokemones :: Pokemon -> [Pokemon] -> Bool
+--Funcion para indicar si el pokemon dado, le gana a todos los pokemon de la lista de pokemones
+pokemonContraListaDePokemones p [] = True
+pokemonContraListaDePokemones  p (x:xs) = if tipoDePokemonLeGanaA (tipo p) (tipo x)
+                                          then pokemonContraListaDePokemones p xs
+                                          else tipoDePokemonLeGanaA (tipo p) (tipo x)
 
 tipoDePokemonLeGanaA :: TipoDePokemon -> TipoDePokemon -> Bool
 tipoDePokemonLeGanaA Agua Fuego = True
