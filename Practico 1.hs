@@ -130,8 +130,8 @@ yTambien p q =
 oBien :: Bool -> Bool -> Bool
 oBien p q =
      case p of
-          True ->True
-          _ -> q
+          False -> q 
+          _ -> True
 
                {-Funciones Registros-}
 data Persona = Persona String Int deriving Show
@@ -223,7 +223,7 @@ juntarPokemon (unEntrenador,otroEntrenador) = listaPokemonDe_ unEntrenador ++ li
 
 listaPokemonDe_ :: Entrenador -> [Pokemon]
 listaPokemonDe_ unEntrenador = --(pokemon1(unEntrenador) : []) ++ (pokemon2(unEntrenador) : [])
-                                [pokemon1(unEntrenador)] ++ [pokemon2(unEntrenador)]
+                                pokemon1(unEntrenador) : [pokemon2(unEntrenador)]
 
                               {-Funciones polimórficas-}
 {-1-}
