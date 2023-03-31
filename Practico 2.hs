@@ -416,18 +416,19 @@ rolesImplicadosEnElProyecto p (x:xs) = if nombreProyecto p == nombreProyecto(pro
 --D
 asignadosPorProyecto :: Empresa -> [(Proyecto, Int)]
 --Devuelve una lista de pares que representa a los proyectos (sin repetir) junto con su cantidad de personas involucradas.
-asignadosPorProyecto e = proyectosConSuCantidadDeEmpleados (proyectos e) (rolesEmpresa e)
+asignadosPorProyecto e = proyectosConSuCantidadDeEmpleados (proyectos e) e
 
-proyectosConSuCantidadDeEmpleados :: [Proyecto] -> [Rol] -> [(Proyecto,Int)]
--- Dado una lista de proyectos devuelve una lista de tuplas
+proyectosConSuCantidadDeEmpleados :: [Proyecto] -> Empresa -> [(Proyecto,Int)]
+-- Dado una lista de proyectos y una empresa, devuelve una lista de tuplas las cuales contienen los proyectos con la cantidad de roles que hay en cada proyecto
 -- proyectosConSuCantidadDeEmpleados (proyectos stean) (rolesEmpresa stean)
-proyectosConSuCantidadDeEmpleados [] [] = []
-proyectosConSuCantidadDeEmpleados _ [] = []
 proyectosConSuCantidadDeEmpleados [] _ = []
+proyectosConSuCantidadDeEmpleados (x:xs) e = proyectoConSuCantidadDeEmpleados x e : proyectosConSuCantidadDeEmpleados xs e
 
-proyectosConSuCantidadDeEmpleados(x:xs) lr = (x,longitud(rolesImplicadosEnElProyecto x lr)) : proyectosConSuCantidadDeEmpleados xs lr
+--proyectosConSuCantidadDeEmpleados(x:xs) lr = (x,longitud(rolesImplicadosEnElProyecto x lr)) : proyectosConSuCantidadDeEmpleados xs lr <- Viejo
 
-
+proyectoConSuCantidadDeEmpleados :: Proyecto -> Empresa -> (Proyecto,Int)
+--Funcion que dado un proyecto y una empresa, devuelve una tupla con el proyecto dado y la cantidad de roles que forman parte del proyecto
+proyectoConSuCantidadDeEmpleados p e = (p,longitud(rolesImplicadosEnElProyecto p (rolesEmpresa e)))
 
 
 
