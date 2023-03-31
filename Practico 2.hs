@@ -381,8 +381,8 @@ rolesDondeLosProyectos_EstanPresentes :: [Proyecto] -> [Rol] -> [Rol]
 --Dado una lista de proyectos y una lista de roles, devuelve una lista de roles cuyo proyectos sean lo que aparecen en la lista de proyectos
 rolesDondeLosProyectos_EstanPresentes [] [] = []
 rolesDondeLosProyectos_EstanPresentes (x:xs) [] = []
-rolesDondeLosProyectos_EstanPresentes [] (_:ys) = []
-rolesDondeLosProyectos_EstanPresentes (x:xs) (_:ys) = estaElProyectoEnLaListaDeRoles x ys : rolesDondeLosProyectos_EstanPresentes xs ys
+rolesDondeLosProyectos_EstanPresentes [] lr = []
+rolesDondeLosProyectos_EstanPresentes (x:xs) lr = estaElProyectoEnLaListaDeRoles x lr : rolesDondeLosProyectos_EstanPresentes xs lr
 
 seniorityDeUnRol :: Rol -> Seniority
 -- Funcion que sirve para obtener el Seniority de cualquier tipo de rol (Management, Developer)
