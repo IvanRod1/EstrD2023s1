@@ -85,7 +85,6 @@ elMayorDe a b = if a > b
                 else b
 
 zipMaximos :: [Int] -> [Int] -> [Int]
-zipMaximos [] [] = [] 
 zipMaximos a [] = a
 zipMaximos [] b = b
 zipMaximos (x:xs) (y:ys) = elMayorDe x y : zipMaximos xs ys 
