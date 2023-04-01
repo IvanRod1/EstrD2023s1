@@ -131,12 +131,20 @@ losPrimeros 0 _ = []
 losPrimeros n (x:xs) = x : losPrimeros (n - 1) xs  
 
 --5
-sinLosPrimeros :: Int -> [a] -> [a]
+{-sinLosPrimeros :: Int -> [a] -> [a]
 sinLosPrimeros _ [] = []
-sinLosPrimeros 0 (_:xs) = xs
+sinLosPrimeros 0 (_:xs) = xs        <- viejo
 sinLosPrimeros n (x:xs) = if (n == 0)
                           then x : sinLosPrimeros n xs
-                          else sinLosPrimeros (n - 1) xs
+                          else sinLosPrimeros (n - 1) xs-}
+                          
+sinLosPrimeros :: Int -> [a] -> [a]
+sinLosPrimeros _ [] = []
+sinLosPrimeros 0 xs = xs
+sinLosPrimeros n (x:xs) = if n > 0
+                          then sinLosPrimeros (n - 1) xs
+                          else xs
+
 
                                     {-Registros-}
 data Persona = P String Int deriving Show
