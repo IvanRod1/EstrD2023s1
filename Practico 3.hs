@@ -236,7 +236,8 @@ esHoja _ = False
 --Dado un arbol, si alguno de sus arboles hijos es un arbol vacio, devuelve el arbol que no lo sea. Si ambos arboles son vacios, devuelve arbol vacio
 
 unArbolDeOtroArbol (NodeT _ a1 EmptyT) = a1
-unArbolDeOtroArbol (NodeT _ EmptyT a2) = a2 -}
+unArbolDeOtroArbol (NodeT _ EmptyT a2) = a2
+unArbolDeOtroArbol (NodeT _ a1 a2) = NodeT _ a1 a2 -}
 
 --7
 heightT :: Tree a -> Int
