@@ -170,6 +170,9 @@ arbolEjemploPaint2 = NodeT 9
                                                                                     EmptyT) 
                                                                                          EmptyT
 
+arbolSinArboles :: Tree Int
+arbolSinArboles = NodeT 2 EmptyT EmptyT
+
 --1
 sumarT :: Tree Int -> Int
 --Dado un árbol binario de enteros devuelve la suma entre sus elementos.
@@ -209,9 +212,31 @@ unoSiCeroSino _ = 0
 
 --6
 leaves :: Tree a -> [a]
---Dado un árbol devuelve los elementos que se encuentran en sus hojas.
+-- Dado un árbol devuelve los elementos que se encuentran en sus hojas.
+-- esta funcion debe retornar la lista de los elementos que tienen las hojas
 leaves EmptyT = []
-leaves (NodeT x a1 a2) = x : leaves a1 ++ leaves a2
+
+--leaves (NodeT x a1 a2) = x : leaves a1 ++ leaves a2
+{-leaves a = if esHoja a
+           then elementoArbol a : leaves (unArbolDeOtroArbol a)
+           else leaves (unArbolDeOtroArbol a) -}
+
+leaves (NodeT x a1 a2) = if not (esArbolVacio a1 && esArbolVacio a2)
+                         then leaves 
+                         else x : leaves 
+
+
+
+esHoja :: Tree a -> Bool
+-- Una hoja es un arbol cuyos arboles son vacios. Indica si el arbol dado es una hoja
+esHoja (NodeT _ EmptyT EmptyT) = True
+esHoja _ = False
+
+{-unArbolDeOtroArbol :: Tree a -> Tree a 
+--Dado un arbol, si alguno de sus arboles hijos es un arbol vacio, devuelve el arbol que no lo sea. Si ambos arboles son vacios, devuelve arbol vacio
+
+unArbolDeOtroArbol (NodeT _ a1 EmptyT) = a1
+unArbolDeOtroArbol (NodeT _ EmptyT a2) = a2 -}
 
 --7
 heightT :: Tree a -> Int
@@ -255,15 +280,10 @@ esArbolVacio EmptyT = True
 esArbolVacio _ = False
 
 unArbolDeOtroArbol :: Tree a -> Tree a 
---Dado un arbol, si alguno de sus arboles hijos es un arbol vacio, devuelve el arbol que no lo sea. En caso de que
---ambos arboles no sean vacios, devuelve el arbol mas grande de los dos. Si ambos arboles son vacios, devuelve arbol vacio
+--Dado un arbol, si alguno de sus arboles hijos es un arbol vacio, devuelve el arbol que no lo sea. Si ambos arboles son vacios, devuelve arbol vacio
 
 unArbolDeOtroArbol (NodeT _ a1 EmptyT) = a1
 unArbolDeOtroArbol (NodeT _ EmptyT a2) = a2 
-unArbolDeOtroArbol (NodeT _ a1 a2) = if sizeT a1 > sizeT a2
-                                     then a1
-                                     else a2
-unArbolDeOtroArbol _ = EmptyT 
 
 
 primerArbol:: Tree a -> Tree a 
