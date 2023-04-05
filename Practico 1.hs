@@ -120,16 +120,30 @@ implica :: Bool -> Bool -> Bool
 implica p q = oBien (negar p) q
 
 --C
-yTambien :: Bool -> Bool -> Bool
+{-yTambien :: Bool -> Bool -> Bool
 yTambien False _ = False
 yTambien _ False = False
-yTambien _ _ = True
+yTambien _ _ = True-}
+
+yTambien :: Bool -> Bool -> Bool
+yTambien True p = p
+yTambien _ _= False
+
+{-yTambien p q =
+case p of
+True -> q
+_ -> False
+-}
 
 --D
-oBien :: Bool -> Bool -> Bool
-oBien True _ = True
+{-oBien :: Bool -> Bool -> Bool
+oBien True p = p
 oBien _ True = True
-oBien _ _ = False
+oBien _ _ = False-}
+
+oBien :: Bool -> Bool -> Bool
+oBien False p =  p
+oBien _ _ = True
 
                {-Funciones Registros-}
 data Persona = Persona String Int deriving Show
