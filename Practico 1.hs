@@ -121,17 +121,15 @@ implica p q = oBien (negar p) q
 
 --C
 yTambien :: Bool -> Bool -> Bool
-yTambien p q =
-     case p of
-          True -> q 
-          _ -> False
+yTambien False _ = False
+yTambien _ False = False
+yTambien _ _ = True
 
 --D
 oBien :: Bool -> Bool -> Bool
-oBien p q =
-     case p of
-          False -> q 
-          _ -> True
+oBien True _ = True
+oBien _ True = True
+oBien _ _ = False
 
                {-Funciones Registros-}
 data Persona = Persona String Int deriving Show
