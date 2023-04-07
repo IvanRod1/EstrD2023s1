@@ -258,11 +258,38 @@ pokemonContraListaDePokemones  p (x:xs) = tipoDePokemonLeGanaA (tipo p) (tipo x)
                                           then pokemonContraListaDePokemones p xs
                                           else tipoDePokemonLeGanaA (tipo p) (tipo x)-}
 
-tipoDePokemonLeGanaA :: TipoDePokemon -> TipoDePokemon -> Bool
+{-tipoDePokemonLeGanaA :: TipoDePokemon -> TipoDePokemon -> Bool
 tipoDePokemonLeGanaA Agua Fuego = True
 tipoDePokemonLeGanaA Fuego Planta = True
 tipoDePokemonLeGanaA Planta Agua = True
-tipoDePokemonLeGanaA _ _ = False
+tipoDePokemonLeGanaA _ _ = False-}
+
+tipoDePokemonLeGanaA :: TipoDePokemon -> TipoDePokemon -> Bool  -- cambio marcado por issue 7/4
+-- Dados dos tipos de pokemon, indica si el primer tipo le gana al segundo tipo
+tipoDePokemonLeGanaA Agua tp = pokemonDeTipoAguaLeGanaA tp
+tipoDePokemonLeGanaA Fuego tp = pokemonDeTipoFuegoLeGanaA tp
+tipoDePokemonLeGanaA _ tp = pokemonDeTipoPlantaLeGanaA tp
+
+
+pokemonDeTipoAguaLeGanaA :: TipoDePokemon -> Bool
+-- Dado un tipo de pokemon, indica si un pokemon de tipo agua puede ganarle al pokemon del tipo dado
+pokemonDeTipoAguaLeGanaA Fuego = True
+pokemonDeTipoAguaLeGanaA _ = False
+
+pokemonDeTipoFuegoLeGanaA :: TipoDePokemon -> Bool
+-- Dado un tipo de pokemon, indica si un pokemon de tipo fuego puede ganarle al pokemon del tipo dado
+pokemonDeTipoFuegoLeGanaA Planta = True
+pokemonDeTipoFuegoLeGanaA _ = False
+
+pokemonDeTipoPlantaLeGanaA :: TipoDePokemon -> Bool
+-- Dado un tipo de pokemon, indica si un pokemon de tipo planta puede ganarle al pokemon del tipo dado
+pokemonDeTipoPlantaLeGanaA Agua = True
+pokemonDeTipoPlantaLeGanaA _ = False
+
+
+
+
+
 
 {-pokemonesDelTipo_En_:: TipoDePokemon -> [Pokemon] -> [Pokemon]
 pokemonesDelTipo_En_ tp [] = []
@@ -377,20 +404,19 @@ hayDevSeniorEn p =
 
        
 
-estaElProyectoEnLaListaDeRoles :: Proyecto -> [Rol] -> Rol
---Dado un proyecto y una lista de royes, devuelve un rol cuyo proyecto sea el proyecto dado
-estaElProyectoEnLaListaDeRoles p [] = error "El Proyecto no esta en la lista de roles"
+estaElProyectoEnLaListaDeRoles :: Proyecto -> [Rol] -> [Rol]
+--Dado un proyecto y una lista de royes, devuelve una lista de roles en los cuales el proyecto esta presente
+estaElProyectoEnLaListaDeRoles p [] = []
 estaElProyectoEnLaListaDeRoles p (x:xs) = if (nombreProyecto p) == nombreProyecto(proyectoDeUnRol x)
-                                          then x
+                                          then x : estaElProyectoEnLaListaDeRoles p xs
                                           else estaElProyectoEnLaListaDeRoles p xs
 
-rolesDondeLosProyectos_EstanPresentes :: [Proyecto] -> [Rol] -> [Rol]
+rolesDondeLosProyectos_EstanPresentes :: [Proyecto] -> [Rol] -> [Rol]        -- cambio marcado por issue 7/4
 --rolesDondeLosProyectos_EstanPresentes (proyectos stean) (rolesEmpresa stean)
 --Dado una lista de proyectos y una lista de roles, devuelve una lista de roles cuyo proyectos sean lo que aparecen en la lista de proyectos
-rolesDondeLosProyectos_EstanPresentes [] [] = []
 rolesDondeLosProyectos_EstanPresentes (x:xs) [] = []
 rolesDondeLosProyectos_EstanPresentes [] lr = []
-rolesDondeLosProyectos_EstanPresentes (x:xs) lr = estaElProyectoEnLaListaDeRoles x lr : rolesDondeLosProyectos_EstanPresentes xs lr
+rolesDondeLosProyectos_EstanPresentes (x:xs) lr = estaElProyectoEnLaListaDeRoles x lr ++ rolesDondeLosProyectos_EstanPresentes xs lr
 
 seniorityDeUnRol :: Rol -> Seniority
 -- Funcion que sirve para obtener el Seniority de cualquier tipo de rol (Management, Developer)
