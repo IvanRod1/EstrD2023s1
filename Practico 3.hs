@@ -6,7 +6,7 @@ data Celda = Bolita Color Celda | CeldaVacia deriving Show
 
 -- Bolita Rojo (Bolita Azul (Bolita Rojo (Bolita Azul CeldaVacia))) ejemplo
     {-1-}
-celdaEjemplo = Bolita Rojo (Bolita Azul (Bolita Rojo (Bolita Azul CeldaVacia)))
+celdaEjemplo = Bolita Rojo (Bolita Rojo (Bolita Azul (Bolita Rojo (Bolita Azul CeldaVacia))))
 celdaVacia = CeldaVacia
 
 --A
@@ -37,16 +37,24 @@ sacar :: Color -> Celda -> Celda
 --Gobstones, esta función es total.
 
 sacar c CeldaVacia = celdaVacia
-sacar c (Bolita color celda) = if sonColoresIguales c color
-                then sacar c celda
-                else Bolita color celda  
+sacar c (Bolita color celda) = {-if sonColoresIguales c color
+                               then sacar c celda
+                               else Bolita color celda-}
+                               if not (sonColoresIguales c color)
+                               then  Bolita color (sacar c celda)
+                               else celda
+
 
 --D
 ponerN :: Int -> Color -> Celda -> Celda
 --Dado un número n, un color c, y una celda, agrega n bolitas de color c a la celda
 --ponerN 0 _ _ = CeldaVacia
-ponerN cant c celda= if cant > 0
+ponerN cant c celda= {-if cant > 0
                      then ponerN (cant - 1) c (Bolita c celda)
+                     else celda-}
+
+                     if cant > 0
+                     then ponerN (cant - 1) c (poner c celda)
                      else celda
 
                         {- Camino hacia el tesoro-}
@@ -64,8 +72,14 @@ hayTesoro :: Camino -> Bool
 --Indica si hay un cofre con un tesoro en el camino.
 {-hayTesoro (Cofre _ _) = True
 hayTesoro _ = False-}
-hayTesoro Fin = False
-hayTesoro c = esTesoro c || hayTesoro (camino c) 
+
+{-hayTesoro Fin = False
+hayTesoro c = esTesoro c || hayTesoro (camino c)-}
+
+hayTesoro (Cofre [Tesoro] _) = True
+hayTesoro (Nada camino) = hayTesoro camino
+hayTesoro _ = False
+
 
 esTesoro :: Camino -> Bool
 --Indica si hay un teseoro en el camino dado
@@ -84,7 +98,7 @@ pasosHastaTesoro :: Camino -> Int
 --Indica la cantidad de pasos que hay que recorrer hasta llegar al primer cofre con un tesoro.
 --Si un cofre con un tesoro está al principio del camino, la cantidad de pasos a recorrer es 0.
 --Precondición: tiene que haber al menos un tesoro.
-pasosHastaTesoro Fin = 0
+--pasosHastaTesoro Fin = 0
 pasosHastaTesoro c = if not (esTesoro c)
                      then 1 + pasosHastaTesoro (camino c)
                      else pasosHastaTesoro (camino c)
@@ -379,7 +393,7 @@ elementosDeUnaRama (NodeT a t1 t2) = a : elementosDeUnaRama t1 ++ elementosDeUna
 todosLosCaminos :: Tree a -> [[a]]
 --Dado un árbol devuelve todos los caminos, es decir, los caminos desde la raiz hasta las hojas.
 --todosLosCaminos EmptyT = []
-todosLosCaminos(NodeT a t1 t2) = [arbolALista2 t1] ++ [arbolALista2 t2]
+todosLosCaminos(NodeT a t1 t2) = [a : arbolALista2 t1] ++ [a : arbolALista2 t2]
                                             --unirListasDeListas (arbolALista2 (todosLosCaminos t1)) (arbolALista2 (todosLosCaminos t2))
                                             --todosLosCaminos (arbolALista2 t1) ++ todosLosCaminos (arbolALista t2)
 
@@ -394,12 +408,24 @@ arbolALista2 :: Tree a -> [a]
 arbolALista2 EmptyT = []
 arbolALista2 (NodeT a t1 t2) = if not (esHoja t1) || not (esHoja t2) 
                                then a : arbolALista2 t1 ++ arbolALista2 t2
-                               else arbolALista2 t1 ++ arbolALista2 t2
+                               else  arbolALista2 t1 ++  arbolALista2 t2
 
 {-caminoARaices :: Tree a -> [[a]]
 caminoARaices EmptyT = []
 caminoARaices (NodeT a t1 t2) = [[a]] ++ caminoARaices t1 ++ caminoARaices t2-}
 
+
+todosLosCaminos' :: Tree a -> [[a]]
+todosLosCaminos' EmptyT = []
+todosLosCaminos' (NodeT a t1 t2) =  [a] : subtarea t1 ++ todosLosCaminos' t2
+
+
+{-arbolConSusHijos :: Tree a -> [[a]]
+arbolConSusHijos EmptyT = []
+arbolConSusHijos (NodeT a t1 t2) = [a] : arbolConSusHijos t1 ++ arbolConSusHijos t2-}
+subtarea :: Tree a -> [[a]]
+subtarea EmptyT = []
+subtarea (NodeT a t1 t2) = [a] : todosLosCaminos' t1 ++ [a] : todosLosCaminos' t2
                             {-Expresiones Aritméticas-}
 data ExpA = Valor Int | Sum ExpA ExpA | Prod ExpA ExpA | Neg ExpA deriving Show
 
@@ -481,7 +507,7 @@ simplificar (Prod (Valor 1) y) = y
 simplificar (Prod x (Valor 1)) = x
 --simplificar (Neg (Valor (x < 0))) = valorEnteroDe x * (-1)
 simplificar(Neg (Valor x)) = if x < 0
-                             then Valor (x * (1))
+                             then Valor (x * (-1))
                              else Valor x
 simplificar _ = error "No se puede simplificar"
 
