@@ -197,7 +197,7 @@ pochinki = ConsPokemon Agua 1000
 
 
 ash = ConsEntrenador "Ash" [balastoid,chakarita,chorizord,pochinki]
-jamemes = ConsEntrenador "Jamemes" [chorizord,chorizord]
+jamemes = ConsEntrenador "Jamemes" [chorizord,chorizord,chakarita]
 
 --A
 cantPokemon :: Entrenador -> Int
@@ -238,10 +238,17 @@ cuantosDeTipo_De_LeGananATodosLosDe_ tp ep1 ep2 = longitud (pokemonesDelTipo_En_
 pokemonesDe_QueGanaronContraTodosLosPokemonesDe_:: [Pokemon] -> [Pokemon] -> [Pokemon]
 -- Dado una dos listas de pokemon, devuelve una lista de pokemon de la primera lista de los cuales ganaron todas las peleas contra los pokemon de la segunda lista de pokemon
 pokemonesDe_QueGanaronContraTodosLosPokemonesDe_ [] _ = []
+--pokemonesDe_QueGanaronContraTodosLosPokemonesDe_ (x:xs) [] = [x]
 pokemonesDe_QueGanaronContraTodosLosPokemonesDe_ _ [] = []
-pokemonesDe_QueGanaronContraTodosLosPokemonesDe_ (x:xs) lp =     if pokemonContraListaDePokemones x lp
-                                                                 then x : pokemonesDe_QueGanaronContraTodosLosPokemonesDe_ xs lp
-                                                                 else pokemonesDe_QueGanaronContraTodosLosPokemonesDe_ xs lp 
+pokemonesDe_QueGanaronContraTodosLosPokemonesDe_ (x:xs) (y:ys) =  if superaA x y && pokemonContraListaDePokemones x ys
+                                                                  then x : pokemonesDe_QueGanaronContraTodosLosPokemonesDe_ xs ys
+                                                                  else pokemonesDe_QueGanaronContraTodosLosPokemonesDe_ xs (y:ys)
+                                                              
+    
+    
+                                                 {-lp    if pokemonContraListaDePokemones x lp
+                                                         then x : pokemonesDe_QueGanaronContraTodosLosPokemonesDe_ xs lp
+                                                         else pokemonesDe_QueGanaronContraTodosLosPokemonesDe_ xs lp -}
     
                                                         {-if tipoDePokemonLeGanaA (tipo x) (tipo y)       <- Codigo malo
                                                         then x : pokemonesDe_QueGanaronContraPokemonesDe_ xs ys 
@@ -253,22 +260,26 @@ pokemonesDe_QueGanaronContraTodosLosPokemonesDe_ (x:xs) lp =     if pokemonContr
 pokemonContraListaDePokemones :: Pokemon -> [Pokemon] -> Bool
 --Funcion para indicar si el pokemon dado, le gana a todos los pokemon de la lista de pokemones
 pokemonContraListaDePokemones p [] = True
-pokemonContraListaDePokemones  p (x:xs) = pokemonLeGanaA p x && pokemonContraListaDePokemones p xs
+pokemonContraListaDePokemones  p (x:xs) = superaA p x && pokemonContraListaDePokemones p xs
 
                                           {-if tipoDePokemonLeGanaA (tipo p) (tipo x)
                                           then pokemonContraListaDePokemones p xs
                                           else tipoDePokemonLeGanaA (tipo p) (tipo x)-}
 
-tipoDePokemonLeGanaA :: TipoDePokemon -> TipoDePokemon -> Bool
+tipoDePokemonLeGanaA :: TipoDePokemon -> TipoDePokemon -> Bool -- practica 1
 -- Dados dos tipos de pokemon, indica si el primer tipo de pokemon le gana al segundo tipo de pokemon
 tipoDePokemonLeGanaA Agua Fuego = True
 tipoDePokemonLeGanaA Fuego Planta = True
 tipoDePokemonLeGanaA Planta Agua = True
 tipoDePokemonLeGanaA _ _ = False
 
-pokemonLeGanaA :: Pokemon -> Pokemon -> Bool
+superaA :: Pokemon -> Pokemon -> Bool
+superaA unPokemon otroPokemon = tipoDePokemonLeGanaA (tipo unPokemon) (tipo otroPokemon) -- practica 1
+
+{-pokemonLeGanaA :: Pokemon -> Pokemon -> Bool
 -- Dados dos pokemon, indica si el primero le gana al segundo
-pokemonLeGanaA p1 p2 = tipoDePokemonLeGanaA (tipo p1) (tipo p2)
+pokemonLeGanaA p1 p2 = tipoDePokemonLeGanaA (tipo p1) (tipo p2)-}
+
 
 {-tipoDePokemonLeGanaA :: TipoDePokemon -> TipoDePokemon -> Bool  -- cambio marcado por issue 7/4
 -- Dados dos tipos de pokemon, indica si el primer tipo le gana al segundo tipo
@@ -339,8 +350,9 @@ joseDeveloper = Developer SemiSenior pacopaco
 polaManagement = Management Senior eskaip
 miloDeveloper = Developer Junior pacopaco
 solDeveloper = Developer Senior zomboid
+volDeveloper = Developer SemiSenior zomboid
 
-stean = ConsEmpresa [juanDeveloper,mikeManagement,joseDeveloper,polaManagement,miloDeveloper,solDeveloper]
+stean = ConsEmpresa [juanDeveloper,mikeManagement,joseDeveloper,polaManagement,miloDeveloper,solDeveloper,volDeveloper]
 
 
 --A
@@ -456,16 +468,56 @@ rolesImplicadosEnElProyecto p (x:xs) = if nombreProyecto p == nombreProyecto(pro
                                        else rolesImplicadosEnElProyecto p xs
 
 --D
-asignadosPorProyecto :: Empresa -> [(Proyecto, Int)]
+--asignadosPorProyecto :: Empresa -> [(Proyecto, Int)]
 --Devuelve una lista de pares que representa a los proyectos (sin repetir) junto con su cantidad de personas involucradas.
-asignadosPorProyecto e = proyectosConSuCantidadDeEmpleados (proyectos e) (rolesEmpresa e)
+--asignadosPorProyecto e = proyectosConSuCantidadDeEmpleados (proyectos e) (rolesEmpresa e)
+
+{-proyectosConSuCantidadDeEmpleados :: [Proyecto] -> [Rol] -> [(Proyecto,Int)]
+-- Dado una lista de proyectos y una empresa, devuelve una lista de tuplas las cuales contienen los proyectos con la cantidad de roles que hay en cada proyecto
+-- proyectosConSuCantidadDeEmpleados (proyectos stean) (rolesEmpresa stean)
+proyectosConSuCantidadDeEmpleados [] _ = []
+proyectosConSuCantidadDeEmpleados (x:xs) (y:ys) = if (nombreProyecto x) == nombreProyecto(proyectoDeUnRol y)
+                                                  then (x,cantidadDeRolesEnProyecto x (y:ys)) : proyectosConSuCantidadDeEmpleados xs (y:ys)
+                                                  else  proyectosConSuCantidadDeEmpleados xs (y:ys)-}
+                                                --proyectoConSuCantidadDeEmpleados x lr : proyectosConSuCantidadDeEmpleados xs lr
+
+cantidadDeRolesEnProyecto :: Proyecto -> [Rol] -> Int
+cantidadDeRolesEnProyecto p [] = 0
+cantidadDeRolesEnProyecto p (x:xs)= unoSiCeroSino (esProyecto p x) + cantidadDeRolesEnProyecto p xs         
+
+
+unoSiCeroSino :: Bool -> Int
+unoSiCeroSino True = 1
+unoSiCeroSino _ = 0
+
+
 
 proyectosConSuCantidadDeEmpleados :: [Proyecto] -> [Rol] -> [(Proyecto,Int)]
 -- Dado una lista de proyectos y una empresa, devuelve una lista de tuplas las cuales contienen los proyectos con la cantidad de roles que hay en cada proyecto
 -- proyectosConSuCantidadDeEmpleados (proyectos stean) (rolesEmpresa stean)
 proyectosConSuCantidadDeEmpleados [] _ = []
-proyectosConSuCantidadDeEmpleados (x:xs) lr = proyectoConSuCantidadDeEmpleados x lr : proyectosConSuCantidadDeEmpleados xs lr
+proyectosConSuCantidadDeEmpleados _ [] = []
+proyectosConSuCantidadDeEmpleados (x:xs) (y:ys) = 
 
+                                                   if  esProyecto x y || hayProyectoEnLaListaDeRoles x ys  --(nombreProyecto x) == nombreProyecto(proyectoDeUnRol y) || estaElProyectoEnLaListaDeRoles x ys
+                                                   then (x, cantidadDeRolesEnProyecto x (agregarAlFinal ys y)) : proyectosConSuCantidadDeEmpleados xs (agregarAlFinal ys y)
+                                                   else proyectosConSuCantidadDeEmpleados xs ys
+
+                                                    --(x, cantidadDeRolesEnProyecto x (y:ys)) : proyectosConSuCantidadDeEmpleados xs (y:ys)
+
+hayProyectoEnLaListaDeRoles :: Proyecto -> [Rol] -> Bool
+hayProyectoEnLaListaDeRoles p [] = False
+hayProyectoEnLaListaDeRoles p (x:xs) = esProyecto p x || hayProyectoEnLaListaDeRoles p xs
+
+esProyecto :: Proyecto -> Rol -> Bool
+-- indica si el rol dado forma parte del proyecto dado
+esProyecto p r = (nombreProyecto p) == nombreProyecto(proyectoDeUnRol r) 
+
+
+
+proyectoConSuCantidadDeEmpleados :: Proyecto -> [Rol] -> (Proyecto,Int)
+--Funcion que dado un proyecto y una lista de roles, devuelve una tupla con el proyecto dado y la cantidad de roles que forman parte del proyecto
+proyectoConSuCantidadDeEmpleados p lr = (p,longitud(rolesImplicadosEnElProyecto p lr))
 
 
 {-proyectosConSuCantidadDeEmpleados :: [Proyecto] -> Empresa -> [(Proyecto,Int)]
@@ -480,9 +532,13 @@ proyectosConSuCantidadDeEmpleados (x:xs) e = proyectoConSuCantidadDeEmpleados x 
 --Funcion que dado un proyecto y una empresa, devuelve una tupla con el proyecto dado y la cantidad de roles que forman parte del proyecto
 proyectoConSuCantidadDeEmpleados p e = (p,longitud(rolesImplicadosEnElProyecto p (rolesEmpresa e)))-}
 
-proyectoConSuCantidadDeEmpleados :: Proyecto -> [Rol] -> (Proyecto,Int)
---Funcion que dado un proyecto y una lista de roles, devuelve una tupla con el proyecto dado y la cantidad de roles que forman parte del proyecto
-proyectoConSuCantidadDeEmpleados p lr = (p,longitud(rolesImplicadosEnElProyecto p lr))
+{-hayRolEnListaProyectos :: Rol -> [Proyecto] -> Bool
+hayRolEnListaProyectos r [] = False
+hayRolEnListaProyectos r (x:xs) = esProyecto x r || hayRolEnListaProyectos r xs-}
+
+{-cantidadDeRolesEnProyecto' :: Proyecto -> Rol -> [Rol] -> Int
+cantidadDeRolesEnProyecto' _ _ [] = 0
+cantidadDeRolesEnProyecto' p r rs = unoSiCeroSino (esProyecto p r) + cantidadDeRolesEnProyecto p rs -}       
 
 
 
