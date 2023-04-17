@@ -255,9 +255,20 @@ unArbolDeOtroArbol (NodeT _ a1 a2) = NodeT _ a1 a2 -}
 --7
 heightT :: Tree a -> Int
 --Dado un árbol devuelve su altura maxima
+heightT EmptyT = 0
+heightT (NodeT x a1 a2) =  unoSiCeroSino(not (esHoja a1) && not (esHoja a2)) + dameElMayor (heightT a1)  (heightT a2)
+                    ---unoSiCeroSino(not (esHoja a1) && not (esHoja a2))
+
+dameElMayor :: Int -> Int -> Int
+--Dados dos numeros, devuelve el mayor de estos
+dameElMayor x y = if x > y then x else y
+
+
+{-heightT :: Tree a -> Int
+--Dado un árbol devuelve su altura maxima
 heightT (NodeT _ a1 a2) = if profundidadArbol a1 > profundidadArbol a2
                           then profundidadArbol a1
-                          else profundidadArbol a2
+                          else profundidadArbol a2-}
 
 -----------------------------------------------------------
 profundidadArbol :: Tree a -> Int
@@ -317,27 +328,50 @@ elementoArbol(NodeT a _ _ ) = a
 
 
 --8
+
 mirrorT :: Tree a -> Tree a 
 --Dado un árbol devuelve el árbol resultante de intercambiar el hijo izquierdo con el derecho,
 --en cada nodo del árbol
+
 mirrorT EmptyT = EmptyT
-mirrorT (NodeT a a1 a2) = NodeT a (mirrorT (invertirArboles a2)) (mirrorT(invertirArboles a1)) -- x no la uso 
+mirrorT (NodeT x t1 t2) = invertirArboles (NodeT x (mirrorT t1) (mirrorT t2))
 
 invertirArboles :: Tree a -> Tree a
+--dado un arbol, devuelve otro arbol con sus arboles cambiados de posicion
 invertirArboles EmptyT = EmptyT
-invertirArboles (NodeT a a1 a2) = NodeT a a2 a1 -- x no la uso
+invertirArboles (NodeT x t1 t2) = (NodeT x t2 t1)
+
+{-mirrorT :: Tree a -> Tree a 
+--Dado un árbol devuelve el árbol resultante de intercambiar el hijo izquierdo con el derecho,
+--en cada nodo del árbol
+mirrorT EmptyT = EmptyT
+mirrorT (NodeT a a1 a2) = NodeT a (mirrorT (invertirArboles a2)) (mirrorT(invertirArboles a1)) -- x no la uso -}
+
+{-invertirArboles :: Tree a -> Tree a
+invertirArboles EmptyT = EmptyT
+invertirArboles (NodeT a a1 a2) = NodeT a a2 a1 -- x no la uso-}
+
 
 --9
 toList :: Tree a -> [a]
 --Dado un árbol devuelve una lista que representa el resultado de recorrerlo en modo in-order.
 --Nota: En el modo in-order primero se procesan los elementos del hijo izquierdo, luego la raiz
 --y luego los elementos del hijo derecho
---toList EmptyT = []
-toList (NodeT a a1 a2) =  elementosDelArbol a1 ++ [a] ++ elementosDelArbol a2
+toList EmptyT = []
+toList (NodeT x t1 t2) =  toList t1 ++ [x] ++ toList t2
+
+
+
+{-toList2 :: Tree a -> [a]
+--Dado un árbol devuelve una lista que representa el resultado de recorrerlo en modo in-order.
+--Nota: En el modo in-order primero se procesan los elementos del hijo izquierdo, luego la raiz
+--y luego los elementos del hijo derecho
+--toList2 EmptyT = []
+toList2 (NodeT a a1 a2) =  elementosDelArbol a1 ++ [a] ++ elementosDelArbol a2
 
 elementosDelArbol :: Tree a -> [a]
 elementosDelArbol EmptyT = []
-elementosDelArbol (NodeT a a1 a2) = a : elementosDelArbol a1 ++ elementosDelArbol a2
+elementosDelArbol (NodeT a a1 a2) = a : elementosDelArbol a1 ++ elementosDelArbol a2-}
 
 --10
 levelN :: Int -> Tree a -> [a]
@@ -380,6 +414,21 @@ unirListasDeListas (x:xs) (y:ys) = (x ++ y) : unirListasDeListas xs ys
 ramaMasLarga :: Tree a -> [a]
 --Devuelve los elementos de la rama más larga del árbol
 ramaMasLarga EmptyT = []
+ramaMasLarga (NodeT x t1 t2) =  x : elejirListaMax (ramaMasLarga t1) (ramaMasLarga t2)
+
+elejirListaMax :: [a] -> [a] -> [a]
+--Dado dos listas, devuelve la lista con mas elementos
+elejirListaMax ls1 ls2=  if longitud ls1 > longitud ls2
+                          then ls1
+                          else ls2
+
+longitud :: [a] -> Int  --practico 2
+longitud [] = 0
+longitud (_:xs) = 1 + longitud xs
+
+{-ramaMasLarga :: Tree a -> [a]
+--Devuelve los elementos de la rama más larga del árbol
+ramaMasLarga EmptyT = []
 ramaMasLarga (NodeT _ t1 t2) = if profundidadArbol t1 > profundidadArbol t2
                                then elementosDeUnaRama t1 -- .... ramaMasLarga t1 .... ramaMasLarga t2
                                else elementosDeUnaRama t2
@@ -387,16 +436,53 @@ ramaMasLarga (NodeT _ t1 t2) = if profundidadArbol t1 > profundidadArbol t2
 
 elementosDeUnaRama :: Tree a -> [a]
 elementosDeUnaRama EmptyT = []
-elementosDeUnaRama (NodeT a t1 t2) = a : elementosDeUnaRama t1 ++ elementosDeUnaRama t2
+elementosDeUnaRama (NodeT a t1 t2) = a : elementosDeUnaRama t1 ++ elementosDeUnaRama t2-}
 
 --12
 todosLosCaminos :: Tree a -> [[a]]
 --Dado un árbol devuelve todos los caminos, es decir, los caminos desde la raiz hasta las hojas.
---todosLosCaminos EmptyT = []
-todosLosCaminos(NodeT a t1 t2) = [a : arbolALista2 t1] ++ [a : arbolALista2 t2]
+todosLosCaminos EmptyT = []
+todosLosCaminos (NodeT x t1 t2) =   
+                                    juntarListasDeListas (agregarElementoAListas x (todosLosCaminos t1)) (agregarElementoAListas x (todosLosCaminos t2))
+                                    -- prueba (agregarElementoAListas x (todosLosCaminos t2)) (agregarElementoAListas x (todosLosCaminos t1))
+                                    --unirListasDeListas2  (agregarElementoAListas x (todosLosCaminos t1)) (agregarElementoAListas x (todosLosCaminos t2))
+                                    --agregarElementoAListas x (todosLosCaminos t1) --agregarElementoAListas x (todosLosCaminos t2)
+agregarElementoAListas :: a -> [[a]] -> [[a]]
+agregarElementoAListas a []= [[a]]
+agregarElementoAListas x (y:ys) =  (x : y) : agregarElementoAListas x ys
+
+
+{-nirListasDeListas2 :: [[a]] -> [[a]] -> [[a]]
+--Dados dos listas de listas, retorna una lista de listas con todos los elementos de la primer y segunda lista juntos
+unirListasDeListas2 [] ys = ys
+unirListasDeListas2 xs [] = xs
+unirListasDeListas2 (x:xs) (y:ys) = [x] ++ [y] ++ unirListasDeListas xs ys -}
+
+juntarListasDeListas :: [[a]] -> [[a]] -> [[a]]
+juntarListasDeListas [] ys = []
+juntarListasDeListas xs [] = []
+juntarListasDeListas (x:xs) (y:ys) = [x] ++ [y] ++ juntarListasDeListas xs ys
+                            
+
+{-todosLosCaminos :: Tree a -> [[a]]
+--Dado un árbol devuelve todos los caminos, es decir, los caminos desde la raiz hasta las hojas.
+todosLosCaminos EmptyT = []
+todosLosCaminos (NodeT x t1 t2) = agregarRaiz x (todosLosCaminos t1) (todosLosCaminos t2)
                                             --unirListasDeListas (arbolALista2 (todosLosCaminos t1)) (arbolALista2 (todosLosCaminos t2))
                                             --todosLosCaminos (arbolALista2 t1) ++ todosLosCaminos (arbolALista t2)
+-- me deberia dar [[1,2,4,8],[1,2,5],[1,2],[1,3,6,9],[1,3,7],[1,3],[],[1]] arbol fidel
 
+agregarRaiz :: a -> [[a]] -> [[a]] -> [[a]]
+agregarRaiz a [[]] [[]] = [[]]
+agregarRaiz a (x:xs) (y:ys) =  [a : x] ++ [a : y] ++ agregarRaiz a xs ys 
+
+
+arbolALista :: Tree a -> [[a]]
+arbolALista EmptyT = []
+arbolALista (NodeT x t1 t2) = [x] ++ arbolALista t1-}
+
+
+-- [ [],[1],[1,2],[1,2,4],[1,2,4,8],[1,2,5],[1,3],[1,3,6],[1,3,7] ] ejemplo discord de fidel
 
 {-arbolALista :: Tree a -> [Tree a]
 arbolALista EmptyT = []
@@ -415,17 +501,11 @@ caminoARaices EmptyT = []
 caminoARaices (NodeT a t1 t2) = [[a]] ++ caminoARaices t1 ++ caminoARaices t2-}
 
 
-todosLosCaminos' :: Tree a -> [[a]]
-todosLosCaminos' EmptyT = []
-todosLosCaminos' (NodeT a t1 t2) =  [a] : subtarea t1 ++ todosLosCaminos' t2
-
-
-{-arbolConSusHijos :: Tree a -> [[a]]
-arbolConSusHijos EmptyT = []
-arbolConSusHijos (NodeT a t1 t2) = [a] : arbolConSusHijos t1 ++ arbolConSusHijos t2-}
-subtarea :: Tree a -> [[a]]
+{-subtarea :: Tree a -> [[a]]
 subtarea EmptyT = []
-subtarea (NodeT a t1 t2) = [a] : todosLosCaminos' t1 ++ [a] : todosLosCaminos' t2
+subtarea (NodeT a t1 t2) = [a] : todosLosCaminos' t1 ++ [a] : todosLosCaminos' t2-}
+
+
                             {-Expresiones Aritméticas-}
 data ExpA = Valor Int | Sum ExpA ExpA | Prod ExpA ExpA | Neg ExpA deriving Show
 
@@ -442,15 +522,24 @@ ejemploAritmetica3 = Neg (Valor (negate(-2)))
 --1
 eval :: ExpA -> Int
 --Dada una expresión aritmética devuelve el resultado evaluarla.
+eval (Sum x y) = eval x + eval y
+eval (Prod x y) = eval x * eval y
+eval (Neg x) = eval x * (-1)
+eval (Valor x) = x 
+
+
+
+{-eval :: ExpA -> Int
+--Dada una expresión aritmética devuelve el resultado evaluarla.
 eval (Prod x y) = valorEnteroDe(accederAlValorProd x) * valorEnteroDe(accederAlValorProd y)  --valor(Valor(accederAlValor x)) * valor(Valor (accederAlValor y)) / valor(Prod(accederAlValor x) (accederAlValor y))
 eval (Sum x y) = valorEnteroDe(accederAlValorSum x) + valorEnteroDe(accederAlValorSum y)
 eval (Neg x) = valorEnteroDe(accederAlValorNeg x)
-eval _ = error "No se puede operar con un solo numero"
+eval _ = error "No se puede operar con un solo numero"-}
 --eval (Sum (Valor x) (Valor y)) = x + y
 --eval (Neg (Valor x)) = (-1) * x
 --eval (Valor x) = x
 
-accederAlValorProd:: ExpA -> ExpA
+{-accederAlValorProd:: ExpA -> ExpA
 accederAlValorProd(Prod x y) = if esUnNumero x && esUnNumero y
                                then Valor (valorEnteroDe x * valorEnteroDe y)
                                else accederAlValorProd (Prod (accederAlValorProd x)(accederAlValorProd y))
@@ -490,10 +579,59 @@ valorEnteroDe (Valor x) = x
 esProducto :: ExpA -> Bool
 --Dado un dato de tipo ExpA, indica si este es un producto
 esProducto (Prod _ _) = True
-esProducto _ = False
+esProducto _ = False-}
 
 
+--2
 simplificar :: ExpA -> ExpA
+--Dada una expresión aritmética, la simplifica según los siguientes criterios (descritos utilizando
+--notación matemática convencional):
+ {- a) 0 + x = x + 0 = x
+    b) 0 * x = x * 0 = 0
+    c) 1 * x = x * 1 = x
+    d) - (- x) = x  -} 
+simplificar (Sum x y)  = Valor (simplificarSiSuma (eval x) (eval y))
+simplificar (Prod x y) = Valor (simplificarSiProd (eval x) (eval y))
+simplificar _ = error "No se puede simplificar"
+
+simplificarSiSuma :: Int -> Int -> Int
+simplificarSiSuma x 0 = x
+simplificarSiSuma 0 y = y
+simplificarSiSuma x y = x + y
+
+simplificarSiProd :: Int -> Int -> Int
+simplificarSiProd x 0 = 0
+simplificarSiProd 0 y = 0
+---------------------------
+simplificarSiProd x 1 = x
+simplificarSiProd 1 y = y
+---------------------------
+simplificarSiProd x (-1) = if x < 0 then x else (-x)
+simplificarSiProd x y = x * y
+
+{-simplificarSi :: Int -> Int -> ExpA
+simplificarSi x y = Valor (if x == 0
+                           then y
+                           else if y == 0
+                           then x
+                           else x + y)
+
+simplificarSi (Prod x y) =  Valor (if x == 1 then y
+                                   else if y == 1 then x
+                                   else if x == 0 then 0
+                                   else if x > 0  && y == x then x * (-1)
+                                   else if y > 0  && x == y then y * (-1)                     
+                                   else x * y)-}
+                                
+
+
+
+
+
+
+
+
+{-simplificar :: ExpA -> ExpA
 --Dada una expresión aritmética, la simplifica según los siguientes criterios (descritos utilizando
 --notación matemática convencional):
  {- a) 0 + x = x + 0 = x
@@ -509,5 +647,5 @@ simplificar (Prod x (Valor 1)) = x
 simplificar(Neg (Valor x)) = if x < 0
                              then Valor (x * (-1))
                              else Valor x
-simplificar _ = error "No se puede simplificar"
+simplificar _ = error "No se puede simplificar"-}
 
