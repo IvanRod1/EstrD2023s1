@@ -442,13 +442,13 @@ elementosDeUnaRama (NodeT a t1 t2) = a : elementosDeUnaRama t1 ++ elementosDeUna
 todosLosCaminos :: Tree a -> [[a]]
 --Dado un árbol devuelve todos los caminos, es decir, los caminos desde la raiz hasta las hojas.
 todosLosCaminos EmptyT = []
-todosLosCaminos (NodeT x t1 t2) =   
-                                    juntarListasDeListas (agregarElementoAListas x (todosLosCaminos t1)) (agregarElementoAListas x (todosLosCaminos t2))
+todosLosCaminos (NodeT x t1 t2) = [x] : agregarElementoAListas x (todosLosCaminos t1) ++ agregarElementoAListas x (todosLosCaminos t2)
+                                    --juntarListasDeListas (agregarElementoAListas x (todosLosCaminos t1)) (agregarElementoAListas x (todosLosCaminos t2))
                                     -- prueba (agregarElementoAListas x (todosLosCaminos t2)) (agregarElementoAListas x (todosLosCaminos t1))
                                     --unirListasDeListas2  (agregarElementoAListas x (todosLosCaminos t1)) (agregarElementoAListas x (todosLosCaminos t2))
                                     --agregarElementoAListas x (todosLosCaminos t1) --agregarElementoAListas x (todosLosCaminos t2)
 agregarElementoAListas :: a -> [[a]] -> [[a]]
-agregarElementoAListas a []= [[a]]
+agregarElementoAListas a []= []
 agregarElementoAListas x (y:ys) =  (x : y) : agregarElementoAListas x ys
 
 
