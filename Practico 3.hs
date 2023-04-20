@@ -82,15 +82,27 @@ hayTesoro _ = False
 
 
 esTesoro :: Camino -> Bool
---Indica si hay un teseoro en el camino dado
-esTesoro (Cofre [Tesoro] _) = True
+--Indica si hay un tesoro en el camino dado
+
+esTesoro (Cofre x _) = hayObjetoValioso x
 esTesoro _ = False
+--esTesoro (Cofre[Tesoro] _) = True <-- pm anidado
+
+hayObjetoValioso :: [Objeto] -> Bool
+--Indica si hay almenos un tesoro dentro de una lista de objetos
+hayObjetoValioso (x:xs) = elObjetoEsTesoro x || hayObjetoValioso xs
+
+elObjetoEsTesoro :: Objeto -> Bool
+--Indica si el objeto es tesoro
+elObjetoEsTesoro Tesoro = True
+elObjetoEsTesoro _ = False
 
 camino :: Camino -> Camino
 --Dado un camino, devuelve el camino
 camino (Nada camino) = camino
 camino (Cofre _ camino) = camino
 camino _ = Fin
+
 -- Nada (Nada (Cofre [Tesoro] Fin)) 
 
 --B
@@ -98,10 +110,14 @@ pasosHastaTesoro :: Camino -> Int
 --Indica la cantidad de pasos que hay que recorrer hasta llegar al primer cofre con un tesoro.
 --Si un cofre con un tesoro está al principio del camino, la cantidad de pasos a recorrer es 0.
 --Precondición: tiene que haber al menos un tesoro.
---pasosHastaTesoro Fin = 0
-pasosHastaTesoro c = if not (esTesoro c)
+pasosHastaTesoro (Cofre [Tesoro] _) = 0                          -- <- dudo si esta bien
+pasosHastaTesoro c =  1 + pasosHastaTesoro (camino c)
+pasosHastaTesoro (Nada c) = 1 + pasosHastaTesoro (camino c) 
+pasosHastaTesoro _ = error "Debe haber algun tesoro"
+    
+                     {-if not (esTesoro c)
                      then 1 + pasosHastaTesoro (camino c)
-                     else pasosHastaTesoro (camino c)
+                     else pasosHastaTesoro (camino c)-}
 
 --C
 hayTesoroEn :: Int -> Camino -> Bool
@@ -256,7 +272,8 @@ unArbolDeOtroArbol (NodeT _ a1 a2) = NodeT _ a1 a2 -}
 heightT :: Tree a -> Int
 --Dado un árbol devuelve su altura maxima
 heightT EmptyT = 0
-heightT (NodeT x a1 a2) =  unoSiCeroSino(not (esHoja a1) && not (esHoja a2)) + dameElMayor (heightT a1)  (heightT a2)
+heightT (NodeT _ a1 a2) =  1 + dameElMayor (heightT a1)  (heightT a2)
+                    --unoSiCeroSino(not (esHoja a1) && not (esHoja a2)) + dameElMayor (heightT a1)  (heightT a2)
                     ---unoSiCeroSino(not (esHoja a1) && not (esHoja a2))
 
 dameElMayor :: Int -> Int -> Int
@@ -334,12 +351,13 @@ mirrorT :: Tree a -> Tree a
 --en cada nodo del árbol
 
 mirrorT EmptyT = EmptyT
-mirrorT (NodeT x t1 t2) = invertirArboles (NodeT x (mirrorT t1) (mirrorT t2))
+mirrorT (NodeT x t1 t2) = NodeT x (mirrorT t2) (mirrorT t1)
+    --invertirArboles (NodeT x (mirrorT t1) (mirrorT t2))
 
-invertirArboles :: Tree a -> Tree a
+{-invertirArboles :: Tree a -> Tree a
 --dado un arbol, devuelve otro arbol con sus arboles cambiados de posicion
 invertirArboles EmptyT = EmptyT
-invertirArboles (NodeT x t1 t2) = (NodeT x t2 t1)
+invertirArboles (NodeT x t1 t2) = (NodeT x t2 t1)-}
 
 {-mirrorT :: Tree a -> Tree a 
 --Dado un árbol devuelve el árbol resultante de intercambiar el hijo izquierdo con el derecho,
