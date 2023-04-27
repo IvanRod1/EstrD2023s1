@@ -154,7 +154,7 @@ cantTesorosEntre pMin pMax c =  if pMin > 0
 --avanzar pasos
 
 avanzarN :: Int -> Camino -> Camino
---Dado un numero, avanza la cantidad de veces que diga el mismo devolviendo un camino con los pasos avanzados
+--Dado un numero y un camino, avanza la cantidad de veces que diga el mismo devolviendo el camino con los pasos avanzados
 avanzarN 0 c = c
 avanzarN n c = if n > 0
                then avanzarN (n - 1) (camino c)
