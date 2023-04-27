@@ -84,13 +84,9 @@ hayTesoro _ = False
 esTesoro :: Camino -> Bool
 --Indica si hay un tesoro en el camino dado
 
-esTesoro (Cofre x _) = hayObjetoValioso x
+esTesoro (Cofre x _) = hayUnTesoroEntreLosObjetos x
 esTesoro _ = False
 --esTesoro (Cofre[Tesoro] _) = True <-- pm anidado
-
-hayObjetoValioso :: [Objeto] -> Bool
---Indica si hay almenos un tesoro dentro de una lista de objetos
-hayObjetoValioso (x:xs) = elObjetoEsTesoro x || hayObjetoValioso xs
 
 elObjetoEsTesoro :: Objeto -> Bool
 --Indica si el objeto es tesoro
@@ -110,14 +106,19 @@ pasosHastaTesoro :: Camino -> Int
 --Indica la cantidad de pasos que hay que recorrer hasta llegar al primer cofre con un tesoro.
 --Si un cofre con un tesoro está al principio del camino, la cantidad de pasos a recorrer es 0.
 --Precondición: tiene que haber al menos un tesoro.
-pasosHastaTesoro (Cofre [Tesoro] _) = 0                          -- <- dudo si esta bien
-pasosHastaTesoro c =  1 + pasosHastaTesoro (camino c)
-pasosHastaTesoro (Nada c) = 1 + pasosHastaTesoro (camino c) 
+pasosHastaTesoro (Cofre obs c) = if hayUnTesoroEntreLosObjetos obs 
+                                 then 0
+                                 else 1 + pasosHastaTesoro c
+pasosHastaTesoro (Nada c) = 1 + pasosHastaTesoro  c 
 pasosHastaTesoro _ = error "Debe haber algun tesoro"
     
                      {-if not (esTesoro c)
                      then 1 + pasosHastaTesoro (camino c)
-                     else pasosHastaTesoro (camino c)-}
+                     else 0 -}
+
+hayUnTesoroEntreLosObjetos :: [Objeto] -> Bool
+hayUnTesoroEntreLosObjetos [] = False
+hayUnTesoroEntreLosObjetos(x:xs) =  elObjetoEsTesoro x || hayUnTesoroEntreLosObjetos xs
 
 --C
 hayTesoroEn :: Int -> Camino -> Bool
@@ -144,8 +145,12 @@ cantTesorosEntre :: Int -> Int -> Camino -> Int
 --Dado un rango de pasos, indica la cantidad de tesoros que hay en ese rango. Por ejemplo, si
 --el rango es 3 y 5, indica la cantidad de tesoros que hay entre hacer 3 pasos y hacer 5. Están
 --incluidos tanto 3 como 5 en el resultado.
-cantTesorosEntre pMin pMax c = cantidadDeTesorosAlHacerNPasos pMax c - cantidadDeTesorosAlHacerNPasos pMin c -- mal
+cantTesorosEntre pMin pMax c =  if pMin > 0
+                                then cantTesorosEntre (pMin - 1) (pMax - 1) (avanzarN 1 c)
+                                else cantidadDeTesorosAlHacerNPasos pMax c 
+                                 
 
+                                
 --avanzar pasos
 
 avanzarN :: Int -> Camino -> Camino
@@ -156,12 +161,23 @@ avanzarN n c = if n > 0
                else c
 
 
-cantidadDeTesorosAlHacerNPasos :: Int -> Camino -> Int 
+{-cantidadDeTesorosAlHacerNPasos :: Int -> Camino -> Int 
 --Describe la cantidad de tesoros que hay haciendo una cantidad de pasos dados en el camino dado
 cantidadDeTesorosAlHacerNPasos 0 _ = 0
-cantidadDeTesorosAlHacerNPasos p c = if p > 0
+cantidadDeTesorosAlHacerNPasos p c = if p >= 0
                                      then unoSiHayTesoroCeroSino c + cantidadDeTesorosAlHacerNPasos (p - 1) (camino c)
-                                     else cantidadDeTesorosAlHacerNPasos p (camino c)
+                                     else cantidadDeTesorosAlHacerNPasos p (camino c)-}
+
+cantidadDeTesorosAlHacerNPasos :: Int -> Camino -> Int 
+--Describe la cantidad de tesoros que hay haciendo una cantidad de pasos dados en el camino dado
+cantidadDeTesorosAlHacerNPasos p (Cofre obs c) = if p >= 0
+                                                 then unoSiCeroSino (hayUnTesoroEntreLosObjetos obs) + cantidadDeTesorosAlHacerNPasos (p - 1) c
+                                                 else cantidadDeTesorosAlHacerNPasos p c
+
+cantidadDeTesorosAlHacerNPasos p (Nada c) = cantidadDeTesorosAlHacerNPasos (p - 1) c
+cantidadDeTesorosAlHacerNPasos p Fin = 0
+
+
 
 unoSiHayTesoroCeroSino :: Camino -> Int
 --Denota 1 si hay tesoro en el camino, cero en el caso contrario
@@ -608,16 +624,34 @@ simplificar :: ExpA -> ExpA
     b) 0 * x = x * 0 = 0
     c) 1 * x = x * 1 = x
     d) - (- x) = x  -} 
-simplificar (Sum x y)  = Valor (simplificarSiSuma (eval x) (eval y))
-simplificar (Prod x y) = Valor (simplificarSiProd (eval x) (eval y))
-simplificar _ = error "No se puede simplificar"
+-- data ExpA = Valor Int | Sum ExpA ExpA | Prod ExpA ExpA | Neg ExpA deriving Show
 
-simplificarSiSuma :: Int -> Int -> Int
-simplificarSiSuma x 0 = x
-simplificarSiSuma 0 y = y
-simplificarSiSuma x y = x + y
+simplificar (Valor x) = Valor x 
+simplificar (Sum x y)  =  simplificarSiSuma  (simplificar x)  (simplificar y)
+simplificar (Neg x) = simplificarSiNeg (simplificar x)
+simplificar (Prod x y) = simplificarSiProd (simplificar x) (simplificar y)
 
-simplificarSiProd :: Int -> Int -> Int
+--simplificar (Prod x y) = Valor (simplificarSiProd (eval x) (eval y))
+--simplificar _ = error "No se puede simplificar"
+--simplificar (Sum x y)  = Valor (simplificarSiSuma (eval x) (eval y))
+
+simplificarSiSuma :: ExpA -> ExpA -> ExpA
+simplificarSiSuma (Valor 0) e2 = e2 
+simplificarSiSuma e1 (Valor 0) = e1   
+simplificarSiSuma e1 e2 = Sum e1 e2
+
+simplificarSiProd :: ExpA -> ExpA -> ExpA
+simplificarSiProd (Valor 0) _ = Valor 0
+simplificarSiProd _ (Valor 0) = Valor 0
+simplificarSiProd (Valor 1) e2 = e2
+simplificarSiProd e1 (Valor 1) = e1
+simplificarSiProd e1 e2 = Prod e1 e2
+
+simplificarSiNeg :: ExpA -> ExpA
+simplificarSiNeg (Neg e) = e
+simplificarSiNeg  e = Neg e
+
+{-simplificarSiProd :: Int -> Int -> Int
 simplificarSiProd x 0 = 0
 simplificarSiProd 0 y = 0
 ---------------------------
@@ -625,7 +659,7 @@ simplificarSiProd x 1 = x
 simplificarSiProd 1 y = y
 ---------------------------
 simplificarSiProd x (-1) = if x < 0 then x else (-x)
-simplificarSiProd x y = x * y
+simplificarSiProd x y = x * y-}
 
 {-simplificarSi :: Int -> Int -> ExpA
 simplificarSi x y = Valor (if x == 0
@@ -642,7 +676,10 @@ simplificarSi (Prod x y) =  Valor (if x == 1 then y
                                    else x * y)-}
                                 
 
-
+{-simplificarSiSuma :: Int -> Int -> Int
+simplificarSiSuma x 0 = x
+simplificarSiSuma 0 y = y
+simplificarSiSuma x y = x + y-}
 
 
 
