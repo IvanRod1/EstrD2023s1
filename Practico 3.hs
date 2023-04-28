@@ -145,16 +145,19 @@ cantTesorosEntre :: Int -> Int -> Camino -> Int
 --Dado un rango de pasos, indica la cantidad de tesoros que hay en ese rango. Por ejemplo, si
 --el rango es 3 y 5, indica la cantidad de tesoros que hay entre hacer 3 pasos y hacer 5. Están
 --incluidos tanto 3 como 5 en el resultado.
-cantTesorosEntre pMin pMax c =  if pMin > 0
+
+{-cantTesorosEntre pMin pMax c =  if pMin > 0
                                 then cantTesorosEntre (pMin - 1) (pMax - 1) (avanzarN 1 c)
-                                else cantidadDeTesorosAlHacerNPasos pMax c 
+                                else cantidadDeTesorosAlHacerNPasos pMax c -}
+
+cantTesorosEntre pMin pMax c = cantidadDeTesorosAlHacerNPasos (pMax - pMin) (avanzarN pMin c)
                                  
 
                                 
 --avanzar pasos
 
 avanzarN :: Int -> Camino -> Camino
---Dado un numero y un camino, avanza la cantidad de veces que diga el mismo devolviendo el camino con los pasos avanzados
+--Dado un numero, avanza la cantidad de veces que diga el mismo devolviendo un camino con los pasos avanzados
 avanzarN 0 c = c
 avanzarN n c = if n > 0
                then avanzarN (n - 1) (camino c)
